@@ -18,21 +18,27 @@
          body: "{{ '{{' }} lookup('file', '{{ files_dir }}/{{ rest_config.fn }}') {{ '}}' }}"
 {% endfor %}
 {% endif %}
-{% if early_rest_configs %}
-    early_rest_configs:
-{% for early_rest_config in early_rest_configs %}
-       - endpoint: {{ early_rest_config.endpoint }}
-         body: "{{ '{{' }} lookup('file', '{{ files_dir }}/{{ early_rest_config.fn }}') {{ '}}' }}"
-{% endfor %}
-{% endif %}
     rest_hostname: {{ rest_hostname }}
     rest_port: {{ rest_port }}
 
   tasks:
+{% if install_dependencies %}
+  # Couldn't figure out how to get uri module to accept JSON in a string
+  - name: Install ONOS apps by URL
+    command: curl -sS --user onos:rocks -X POST -HContent-Type:application/json -d '{{ '{{' }} item.body | to_json {{ '}}' }}' http://{{ rest_hostname }}:{{ rest_port }}/{{ '{{' }} item.endpoint {{ '}}' }}
+    with_items:
+       {% for install_dependency in install_dependencies %}
+       - endpoint: "onos/v1/applications"
+         body:
+           url: "{{ install_dependency }}"
+           activate: "true"
+       {% endfor %}
+{% endif %}
+
 {% if dependencies %}
   - name: Add dependencies to ONOS
     uri:
-      url: http://{{ '{{' }} rest_hostname {{ '}}' }}:{{ '{{' }} rest_port {{ '}}' }}/onos/v1/applications/{{ '{{' }} item {{ '}}' }}/active
+      url: http://{{ rest_hostname }}:{{ rest_port }}/onos/v1/applications/{{ '{{' }} item {{ '}}' }}/active
       method: POST
       user: karaf
       password: karaf
@@ -47,7 +53,7 @@
 # vOLT will re-read its net config; vbng may not.
   - name: Add ONOS configuration values
     uri:
-      url: http://{{ '{{' }} rest_hostname {{ '}}' }}:{{ '{{' }} rest_port {{ '}}' }}/{{ '{{' }} item.endpoint {{ '}}' }} #http://localhost:8181/onos/v1/network/configuration/
+      url: http://{{ rest_hostname }}:{{ rest_port }}/{{ '{{' }} item.endpoint {{ '}}' }} #http://localhost:8181/onos/v1/network/configuration/
       body: "{{ '{{' }} item.body {{ '}}' }}"
       body_format: raw
       method: POST
