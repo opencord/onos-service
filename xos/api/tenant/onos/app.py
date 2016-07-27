@@ -38,7 +38,6 @@ class ONOSAppViewSet(XOSViewSet):
     base_name = "app"
     method_name = "app"
     method_kind = "viewset"
-    queryset = ONOSApp.get_tenant_objects().all()
     serializer_class = ONOSAppSerializer
 
     custom_serializers = {"set_attribute": TenantAttributeSerializer}
@@ -52,9 +51,25 @@ class ONOSAppViewSet(XOSViewSet):
 
         return patterns
 
+    def get_queryset(self):
+        queryset = ONOSApp.get_tenant_objects().all()
+
+        # Since name isn't a real database field of the Tenant object, we have
+        # to go through some extra work...
+        name = self.request.query_params.get('name', None)
+        if name is not None:
+            ids = [x.id for x in queryset.all() if x.name == name]
+            return queryset.filter(id__in=ids)
+
+        return queryset
+
     def get_attributes(self, request, pk=None):
         app = self.get_object()
-        return Response(TenantAttributeSerializer(app.tenantattributes.all(), many=True).data)
+        qs = app.tenantattributes.all()
+        name = self.request.query_params.get('attribute_name', None)
+        if name is not None:
+            qs = qs.filter(name=name)
+        return Response(TenantAttributeSerializer(qs, many=True).data)
 
     def add_attribute(self, request, pk=None):
         app = self.get_object()
