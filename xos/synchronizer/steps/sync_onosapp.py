@@ -23,6 +23,7 @@ sys.path.insert(0,parentdir)
 
 logger = Logger(level=logging.INFO)
 
+
 class SyncONOSApp(SyncInstanceUsingAnsible):
     provides=[ONOSApp]
     observes=ONOSApp
