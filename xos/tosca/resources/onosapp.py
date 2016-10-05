@@ -1,15 +1,6 @@
-import os
-import pdb
-import sys
-import tempfile
-sys.path.append("/opt/tosca")
-from translator.toscalib.tosca_template import ToscaTemplate
-import pdb
-
+from xosresource import XOSResource
 from core.models import User, TenantAttribute, Service
 from services.onos.models import ONOSApp, ONOSService
-
-from xosresource import XOSResource
 
 class XOSONOSApp(XOSResource):
     provides = ["tosca.nodes.ONOSApp", "tosca.nodes.ONOSvBNGApp", "tosca.nodes.ONOSvOLTApp", "tosca.nodes.ONOSVTNApp", "tosca.nodes.ONOSvRouterApp"]
