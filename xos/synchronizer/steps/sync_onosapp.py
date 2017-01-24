@@ -9,9 +9,9 @@ import json
 from collections import OrderedDict
 from django.db.models import F, Q
 from xos.config import Config
-from synchronizers.base.ansible import run_template
+from synchronizers.base.ansible_helper import run_template
 from synchronizers.base.syncstep import SyncStep
-from synchronizers.base.ansible import run_template_ssh
+from synchronizers.base.ansible_helper import run_template_ssh
 from synchronizers.base.SyncInstanceUsingAnsible import SyncInstanceUsingAnsible
 from core.models import Service, Slice, Controller, ControllerSlice, ControllerUser, Node, TenantAttribute, Tag
 from services.onos.models import ONOSService, ONOSApp
