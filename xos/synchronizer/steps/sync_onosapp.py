@@ -243,7 +243,7 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
         if self.is_no_container(o):
             # There is no machine to SSH to, so use the synchronizer's
             # run_template method directly.
-            run_template("sync_onosapp_nocontainer.yaml", fields)
+            run_template("sync_onosapp_nocontainer.yaml", fields, object=o)
         else:
             super(SyncONOSApp, self).run_playbook(o, fields)
 
