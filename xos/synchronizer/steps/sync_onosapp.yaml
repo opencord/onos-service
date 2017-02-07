@@ -3,7 +3,7 @@
   gather_facts: False
   connection: ssh
   user: {{ username }}
-  sudo: yes
+  become: yes
   vars:
     appname: {{ appname }}
     dependencies: {{ dependencies }}
