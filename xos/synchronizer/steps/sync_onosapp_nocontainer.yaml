@@ -4,60 +4,29 @@
   vars:
     appname: {{ appname }}
     dependencies: {{ dependencies }}
-{% if component_configs %}
-    component_configs:
-{% for component_config in component_configs %}
-       - component: {{ component_config.component }}
-         config_params: {{  component_config.config_params }}
-{% endfor %}
-{% endif %}
-{% if rest_configs %}
-    rest_configs:
-{% for rest_config in rest_configs %}
-       - endpoint: {{ rest_config.endpoint }}
-         body: "{{ '{{' }} lookup('file', '{{ files_dir }}/{{ rest_config.fn }}') {{ '}}' }}"
-{% endfor %}
-{% endif %}
-    rest_hostname: {{ rest_hostname }}
-    rest_port: {{ rest_port }}
 
   tasks:
-{% if install_dependencies %}
   # Couldn't figure out how to get uri module to accept JSON in a string
   - name: Install ONOS apps by URL
-    command: curl -sS --user onos:rocks -X POST -HContent-Type:application/json -d '{{ '{{' }} item.body | to_json {{ '}}' }}' http://{{ rest_hostname }}:{{ rest_port }}/{{ '{{' }} item.endpoint {{ '}}' }}
-    with_items:
-       {% for install_dependency in install_dependencies %}
-       - endpoint: "onos/v1/applications"
-         body:
-           url: "{{ install_dependency }}"
-           activate: "true"
-       {% endfor %}
-{% endif %}
+    command: curl -sS --user onos:rocks -X POST -HContent-Type:application/json -d '{{ {'url': item, 'activate': 'true'} | to_json }}' http://{{ rest_hostname }}:{{ rest_port }}/onos/v1/applications
+    with_items: "{{ install_dependencies }}"
 
-{% if dependencies %}
   - name: Add dependencies to ONOS
     uri:
-      url: http://{{ rest_hostname }}:{{ rest_port }}/onos/v1/applications/{{ '{{' }} item {{ '}}' }}/active
+      url: http://{{ rest_hostname }}:{{ rest_port }}/onos/v1/applications/{{ item }}/active
       method: POST
       user: karaf
       password: karaf
-    with_items:
-        {% for dependency in dependencies %}
-        - {{ dependency }}
-        {% endfor %}
-{% endif %}
+    with_items: {{ dependencies }}
 
-{% if rest_configs %}
 # Do this after services have been activated, or it will cause an exception.
 # vOLT will re-read its net config; vbng may not.
   - name: Add ONOS configuration values
     uri:
-      url: http://{{ rest_hostname }}:{{ rest_port }}/{{ '{{' }} item.endpoint {{ '}}' }} #http://localhost:8181/onos/v1/network/configuration/
-      body: "{{ '{{' }} item.body {{ '}}' }}"
+      url: http://{{ rest_hostname }}:{{ rest_port }}/{{ item.endpoint }} #http://localhost:8181/onos/v1/network/configuration/
+      body: "{{ item.body }}"
       body_format: json
       method: POST
       user: karaf
       password: karaf
-    with_items: "{{ '{{' }} rest_configs {{ '}}' }}"
-{% endif %}
+    with_items: "{{ rest_configs }}"
