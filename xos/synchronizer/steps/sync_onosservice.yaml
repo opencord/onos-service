@@ -25,7 +25,7 @@
 
   - name: Install Docker
     apt:
-      name={{ '{{' }} item {{ '}}' }}
+      name={{ item }}
       state=latest
       update_cache=yes
     with_items:
@@ -57,8 +57,8 @@
 
   - name: Wait for ONOS to come up
     wait_for:
-      host={{ '{{' }} dockerip.stdout {{ '}}' }}
-      port={{ '{{' }} item {{ '}}' }}
+      host={{ dockerip.stdout }}
+      port={{ item }}
       state=present
     with_items:
     - 8101

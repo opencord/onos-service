@@ -151,7 +151,7 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
             fn = name[5:].replace("/","_")
             endpoint = name[5:]
             file(os.path.join(o.files_dir, fn),"w").write(" " +value)
-            o.early_rest_configs.append( {"endpoint": endpoint, "fn": fn} )
+            o.early_rest_configs.append( {"endpoint": endpoint, "body": " " + value} )
 
         for name in attrs.keys():
             value = attrs[name]
@@ -168,7 +168,7 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
                 # a string, so prepend a space and then strip the space off
                 # later.
                 file(os.path.join(o.files_dir, fn),"w").write(" " +value)
-                o.rest_configs.append( {"endpoint": endpoint, "fn": fn} )
+                o.rest_configs.append( {"endpoint": endpoint, "body": " " + value} )
             if name.startswith("component_config"):
                 components = json.loads(value,object_pairs_hook=OrderedDict)
                 for component in components.keys():
