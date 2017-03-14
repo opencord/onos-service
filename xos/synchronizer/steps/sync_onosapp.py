@@ -7,19 +7,11 @@ import time
 import re
 import json
 from collections import OrderedDict
-from django.db.models import F, Q
 from xos.config import Config
-from synchronizers.base.ansible_helper import run_template
-from synchronizers.base.syncstep import SyncStep
-from synchronizers.base.ansible_helper import run_template_ssh
-from synchronizers.base.SyncInstanceUsingAnsible import SyncInstanceUsingAnsible
-from core.models import Service, Slice, Controller, ControllerSlice, ControllerUser, Node, TenantAttribute, Tag
-from services.onos.models import ONOSService, ONOSApp
+from synchronizers.new_base.ansible_helper import run_template
+from synchronizers.new_base.SyncInstanceUsingAnsible import SyncInstanceUsingAnsible
+from synchronizers.new_base.modelaccessor import *
 from xos.logger import Logger, logging
-
-# hpclibrary will be in steps/..
-parentdir = os.path.join(os.path.dirname(__file__),"..")
-sys.path.insert(0,parentdir)
 
 logger = Logger(level=logging.INFO)
 
@@ -29,18 +21,9 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
     observes=ONOSApp
     requested_interval=0
     template_name = "sync_onosapp.yaml"
-    #service_key_name = "/opt/xos/synchronizers/onos/onos_key"
 
     def __init__(self, *args, **kwargs):
         super(SyncONOSApp, self).__init__(*args, **kwargs)
-
-    def fetch_pending(self, deleted):
-        if (not deleted):
-            objs = ONOSApp.get_tenant_objects().filter(Q(enacted__lt=F('updated')) | Q(enacted=None),Q(lazy_blocked=False))
-        else:
-            objs = ONOSApp.get_deleted_tenant_objects()
-
-        return objs
 
     def get_instance(self, o):
         # We assume the ONOS service owns a slice, so pick one of the instances
@@ -62,7 +45,7 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
         if not o.provider_service:
             return None
 
-        onoses = ONOSService.get_service_objects().filter(id=o.provider_service.id)
+        onoses = ONOSService.objects.filter(id=o.provider_service.id)
         if not onoses:
             return None
 
