@@ -1,0 +1,9 @@
+FROM xosproject/xos-synchronizer-base
+
+ADD . /opt/xos/synchronizers/onos
+
+ENTRYPOINT []
+
+WORKDIR "/opt/xos/synchronizers/onos"
+
+CMD bash -c "cd /opt/xos/synchronizers/onos; ./run-from-api.sh"

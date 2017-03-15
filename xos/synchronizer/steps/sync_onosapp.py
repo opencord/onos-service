@@ -101,6 +101,15 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
             return cuser.kuser_id
 
     def write_configs(self, o):
+        if hasattr(o, "create_attr"):
+            # new API doesn't let us setattr for things that don't already exist
+            o.create_attr("config_fns")
+            o.create_attr("rest_configs")
+            o.create_attr("component_configs")
+            o.create_attr("files_dir")
+            o.create_attr("node_key_fn")
+            o.create_attr("early_rest_configs")
+
         o.config_fns = []
         o.rest_configs = []
         o.component_configs = []
