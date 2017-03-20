@@ -31,7 +31,6 @@ class ONOSApp(Tenant):   # aka 'ONOSTenant'
 
     KIND = ONOS_KIND
 
-    name = StrippedCharField(max_length=255, null=True, blank=True)
     install_dependencies = models.TextField(null=True, blank=True)
     dependencies = models.TextField(null=True, blank=True)
 
