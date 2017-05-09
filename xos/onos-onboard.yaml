@@ -16,8 +16,6 @@ topology_template:
           xproto: ./
           admin: admin.py
           admin_template: templates/onosadmin.html
-          synchronizer: synchronizer/manifest
-          synchronizer_run: onos-synchronizer.py
           #tosca_custom_types: exampleservice.yaml
           tosca_resource: tosca/resources/onosservice.py, tosca/resources/onosapp.py
           rest_service: api/service/onos.py
