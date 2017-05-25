@@ -34,7 +34,7 @@ class ONOSServiceViewSet(XOSViewSet):
     base_name = "onos"
     method_name = "onos"
     method_kind = "viewset"
-    queryset = ONOSService.get_service_objects().all()
+    queryset = ONOSService.objects.all()
     serializer_class = ONOSServiceSerializer
 
     custom_serializers = {"set_attribute": ServiceAttributeSerializer}

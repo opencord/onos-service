@@ -43,7 +43,7 @@ class ONOSServiceAdmin(ReadOnlyAwareAdmin):
                            )
 
     def get_queryset(self, request):
-        return ONOSService.get_service_objects_by_user(request.user)
+        return ONOSService.select_by_user(request.user)
 
 class ONOSAppForm(forms.ModelForm):
     def __init__(self,*args,**kwargs):
@@ -55,7 +55,7 @@ class ONOSAppForm(forms.ModelForm):
             self.fields['kind'].initial = ONOS_KIND
             self.fields['creator'].initial = get_request().user
             if ONOSService.objects.exists():
-               self.fields["provider_service"].initial = ONOSService.get_service_objects().all()[0]
+               self.fields["provider_service"].initial = ONOSService.objects.all()[0]
 
     def save(self, commit=True):
         return super(ONOSAppForm, self).save(commit=commit)
@@ -77,7 +77,7 @@ class ONOSAppAdmin(ReadOnlyAwareAdmin):
     suit_form_tabs = (('general','Details'), ('tenantattrs', 'Attributes'))
 
     def get_queryset(self, request):
-        return ONOSApp.get_tenant_objects_by_user(request.user)
+        return ONOSApp.select_by_user(request.user)
 
 admin.site.register(ONOSService, ONOSServiceAdmin)
 admin.site.register(ONOSApp, ONOSAppAdmin)
