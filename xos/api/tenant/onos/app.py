@@ -11,7 +11,7 @@ from xos.apibase import XOSListCreateAPIView, XOSRetrieveUpdateDestroyAPIView, X
 from api.xosapi_helpers import PlusModelSerializer, XOSViewSet, ReadOnlyField
 
 def get_default_onos_service():
-    onos_services = ONOSService.get_service_objects().all()
+    onos_services = ONOSService.objects.all()
     if onos_services:
         return onos_services[0].id
     return None
@@ -52,7 +52,7 @@ class ONOSAppViewSet(XOSViewSet):
         return patterns
 
     def get_queryset(self):
-        queryset = ONOSApp.get_tenant_objects().all()
+        queryset = ONOSApp.objects.all()
 
         # Since name isn't a real database field of the Tenant object, we have
         # to go through some extra work...

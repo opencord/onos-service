@@ -23,7 +23,7 @@ class XOSONOSApp(XOSResource):
         return args
 
     def get_existing_objs(self):
-        objs = ONOSApp.get_tenant_objects().all()
+        objs = ONOSApp.objects.all()
         objs = [x for x in objs if x.name == self.obj_name]
         return objs
 
