@@ -7,7 +7,7 @@ import time
 import re
 import json
 from collections import OrderedDict
-from xos.config import Config
+from xosconfig import Config
 from synchronizers.new_base.ansible_helper import run_template
 from synchronizers.new_base.SyncInstanceUsingAnsible import SyncInstanceUsingAnsible
 from synchronizers.new_base.modelaccessor import *
@@ -58,12 +58,7 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
         return self.is_no_container(o)
 
     def get_files_dir(self, o):
-        if not hasattr(Config(), "observer_steps_dir"):
-            # make steps_dir mandatory; there's no valid reason for it to not
-            # be defined.
-            raise Exception("observer_steps_dir is not defined in config file")
-
-        step_dir = Config().observer_steps_dir
+        step_dir = Config.get("steps_dir")
 
         return os.path.join(step_dir, "..", "files", str(self.get_onos_service(o).id), o.name)
 

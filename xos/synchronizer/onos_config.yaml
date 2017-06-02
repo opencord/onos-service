@@ -1,0 +1,7 @@
+name: onos-synchronizer
+accessor:
+  username: xosadmin@opencord.org
+  password: "@/opt/xos/services/onos/credentials/xosadmin@opencord.org"
+dependency_graph: "/opt/xos/synchronizers/onos/model-deps"
+steps_dir: "/opt/xos/synchronizers/onos/steps"
+sys_dir: "/opt/xos/synchronizers/onos/sys"

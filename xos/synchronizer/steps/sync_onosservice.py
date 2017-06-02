@@ -4,7 +4,6 @@ import socket
 import sys
 import base64
 import time
-from xos.config import Config
 from synchronizers.new_base.SyncInstanceUsingAnsible import SyncInstanceUsingAnsible
 from synchronizers.new_base.modelaccessor import *
 from xos.logger import Logger, logging
