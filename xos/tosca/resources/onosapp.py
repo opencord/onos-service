@@ -1,5 +1,5 @@
 from xosresource import XOSResource
-from core.models import User, TenantAttribute, Service
+from core.models import User, ServiceInstanceAttribute, Service
 from services.onos.models import ONOSApp, ONOSService
 
 class XOSONOSApp(XOSResource):
@@ -15,22 +15,12 @@ class XOSONOSApp(XOSResource):
         if provider_name:
             args["provider_service"] = self.get_xos_object(ONOSService, throw_exception=throw_exception, name=provider_name)
 
-        # subscriber_service is optional and can be any service
-        subscriber_name = self.get_requirement("tosca.relationships.UsedByService", throw_exception=False)
-        if subscriber_name:
-            args["subscriber_service"] = self.get_xos_object(Service, throw_exception=throw_exception, name=subscriber_name)
-
         return args
-
-    def get_existing_objs(self):
-        objs = ONOSApp.objects.all()
-        objs = [x for x in objs if x.name == self.obj_name]
-        return objs
 
     def set_tenant_attr(self, obj, prop_name, value):
         value = self.try_intrinsic_function(value)
         if value:
-            attrs = TenantAttribute.objects.filter(tenant=obj, name=prop_name)
+            attrs = ServiceInstanceAttribute.objects.filter(tenant=obj, name=prop_name)
             if attrs:
                 attr = attrs[0]
                 if attr.value != value:
@@ -39,7 +29,7 @@ class XOSONOSApp(XOSResource):
                     attr.save()
             else:
                 self.info("adding attribute %s" % prop_name)
-                ta = TenantAttribute(tenant=obj, name=prop_name, value=value)
+                ta = ServiceInstanceAttribute(tenant=obj, name=prop_name, value=value)
                 ta.save()
 
     def postprocess(self, obj):
