@@ -42,10 +42,10 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
         return None
 
     def get_onos_service(self, o):
-        if not o.provider_service:
+        if not o.owner:
             return None
 
-        onoses = ONOSService.objects.filter(id=o.provider_service.id)
+        onoses = ONOSService.objects.filter(id=o.owner.id)
         if not onoses:
             return None
 
@@ -115,7 +115,7 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
 
         # Combine the service attributes with the tenant attributes. Tenant
         # attribute can override service attributes.
-        attrs = o.provider_service.serviceattribute_dict
+        attrs = o.owner.serviceattribute_dict
         attrs.update(o.tenantattribute_dict)
 
         ordered_attrs = attrs.keys()

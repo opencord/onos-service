@@ -2,12 +2,10 @@ option kind="onos";
 option name="onos";
 option verbose_name="ONOS Service";
 
-message ONOSApp (Tenant){
+message ONOSApp (ServiceInstance){
      optional string install_dependencies = 1 [db_index = False, null = True, blank = True];
      optional string dependencies = 2 [db_index = False, null = True, blank = True];
-     optional manytoone creator->User:onos_apps = 3 [db_index = True, null = True, blank = True];
 }
-
 
 message ONOSService (Service){
      optional string rest_hostname = 1 [db_index = False, max_length = 255, null = True, content_type = "stripped", blank = True];
