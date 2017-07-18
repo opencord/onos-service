@@ -10,7 +10,7 @@ from django.contrib.auth.signals import user_logged_in
 from django.utils import timezone
 from django.contrib.contenttypes import generic
 from suit.widgets import LinkedSelect
-from core.admin import ServiceAppAdmin,SliceInline,ServiceAttrAsTabInline, ReadOnlyAwareAdmin, XOSTabularInline, ServicePrivilegeInline, TenantRootTenantInline, TenantRootPrivilegeInline, TenantAttrAsTabInline
+from core.admin import ServiceAppAdmin,SliceInline,ServiceAttrAsTabInline, ReadOnlyAwareAdmin, XOSTabularInline, ServicePrivilegeInline, ServiceInstanceAttrAsTabInline, SubscriberLinkInline, ProviderLinkInline, ProviderDependencyInline,SubscriberDependencyInline
 from core.middleware import get_request
 
 from functools import update_wrapper
@@ -26,7 +26,7 @@ class ONOSServiceAdmin(ReadOnlyAwareAdmin):
     list_display_links = ('backend_status_icon', 'name', )
     fieldsets = [(None, {'fields': ['backend_status_text', 'name','enabled','versionNumber', 'description',"view_url","icon_url", "rest_hostname", "rest_port", "no_container" ], 'classes':['suit-tab suit-tab-general']})]
     readonly_fields = ('backend_status_text', )
-    inlines = [SliceInline,ServiceAttrAsTabInline,ServicePrivilegeInline]
+    inlines = [SliceInline,ServiceAttrAsTabInline,ServicePrivilegeInline, ProviderDependencyInline,SubscriberDependencyInline]
 
     extracontext_registered_admins = True
 
@@ -36,6 +36,7 @@ class ONOSServiceAdmin(ReadOnlyAwareAdmin):
         ('administration', 'Administration'),
         ('slices','Slices'),
         ('serviceattrs','Additional Attributes'),
+        ('servicetenants', 'Dependencies'),
         ('serviceprivileges','Privileges'),
     )
 
@@ -48,14 +49,14 @@ class ONOSServiceAdmin(ReadOnlyAwareAdmin):
 class ONOSAppForm(forms.ModelForm):
     def __init__(self,*args,**kwargs):
         super (ONOSAppForm,self ).__init__(*args,**kwargs)
-        self.fields['kind'].widget.attrs['readonly'] = True
-        self.fields['provider_service'].queryset = ONOSService.objects.all()
+#        self.fields['kind'].widget.attrs['readonly'] = True
+        self.fields['owner'].queryset = ONOSService.objects.all()
         if (not self.instance) or (not self.instance.pk):
             # default fields for an 'add' form
-            self.fields['kind'].initial = ONOS_KIND
-            self.fields['creator'].initial = get_request().user
+#            self.fields['kind'].initial = ONOS_KIND
+#            self.fields['creator'].initial = get_request().user
             if ONOSService.objects.exists():
-               self.fields["provider_service"].initial = ONOSService.objects.all()[0]
+               self.fields["owner"].initial = ONOSService.objects.all()[0]
 
     def save(self, commit=True):
         return super(ONOSAppForm, self).save(commit=commit)
@@ -67,14 +68,13 @@ class ONOSAppForm(forms.ModelForm):
 class ONOSAppAdmin(ReadOnlyAwareAdmin):
     list_display = ('backend_status_icon', 'name', )
     list_display_links = ('backend_status_icon', 'name')
-    fieldsets = [ (None, {'fields': ['backend_status_text', 'kind', 'name', 'provider_service', 'subscriber_service', 'service_specific_attribute', "dependencies",
-                                     'creator'],
+    fieldsets = [ (None, {'fields': ['backend_status_text', 'name', 'owner', 'service_specific_attribute', "dependencies"],
                           'classes':['suit-tab suit-tab-general']})]
-    readonly_fields = ('backend_status_text', 'instance', 'service_specific_attribute')
-    inlines = [TenantAttrAsTabInline]
+    readonly_fields = ('backend_status_text', 'service_specific_attribute')
+    inlines = [ServiceInstanceAttrAsTabInline, ProviderLinkInline, SubscriberLinkInline]
     form = ONOSAppForm
 
-    suit_form_tabs = (('general','Details'), ('tenantattrs', 'Attributes'))
+    suit_form_tabs = (('general','Details'), ('serviceinstanceattrs', 'Attributes'), ('servicelinks','Links'),)
 
     def get_queryset(self, request):
         return ONOSApp.select_by_user(request.user)

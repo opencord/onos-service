@@ -1,5 +1,5 @@
 from xosresource import XOSResource
-from core.models import User, TenantAttribute, Service
+from core.models import User, ServiceInstanceAttribute, Service, ServiceInstanceLink
 from services.onos.models import ONOSApp, ONOSService
 
 class XOSONOSApp(XOSResource):
@@ -13,24 +13,14 @@ class XOSONOSApp(XOSResource):
         # provider_service is mandatory and must be the ONOS Service
         provider_name = self.get_requirement("tosca.relationships.TenantOfService", throw_exception=throw_exception)
         if provider_name:
-            args["provider_service"] = self.get_xos_object(ONOSService, throw_exception=throw_exception, name=provider_name)
-
-        # subscriber_service is optional and can be any service
-        subscriber_name = self.get_requirement("tosca.relationships.UsedByService", throw_exception=False)
-        if subscriber_name:
-            args["subscriber_service"] = self.get_xos_object(Service, throw_exception=throw_exception, name=subscriber_name)
+            args["owner"] = self.get_xos_object(ONOSService, throw_exception=throw_exception, name=provider_name)
 
         return args
-
-    def get_existing_objs(self):
-        objs = ONOSApp.objects.all()
-        objs = [x for x in objs if x.name == self.obj_name]
-        return objs
 
     def set_tenant_attr(self, obj, prop_name, value):
         value = self.try_intrinsic_function(value)
         if value:
-            attrs = TenantAttribute.objects.filter(tenant=obj, name=prop_name)
+            attrs = ServiceInstanceAttribute.objects.filter(service_instance=obj, name=prop_name)
             if attrs:
                 attr = attrs[0]
                 if attr.value != value:
@@ -39,7 +29,7 @@ class XOSONOSApp(XOSResource):
                     attr.save()
             else:
                 self.info("adding attribute %s" % prop_name)
-                ta = TenantAttribute(tenant=obj, name=prop_name, value=value)
+                ta = ServiceInstanceAttribute(service_instance=obj, name=prop_name, value=value)
                 ta.save()
 
     def postprocess(self, obj):
@@ -54,6 +44,15 @@ class XOSONOSApp(XOSResource):
                 self.set_tenant_attr(obj, k, v)
             elif k == "autogenerate":
                 self.set_tenant_attr(obj, k, v)
+
+        # subscriber_service is optional and can be any service
+        subscriber_name = self.get_requirement("tosca.relationships.UsedByService", throw_exception=False)
+        if subscriber_name:
+            sub_serv = self.get_xos_object(Service, throw_exception=True, name=subscriber_name)
+            existing_links = ServiceInstanceLink.objects.filter(provider_service_instance_id = obj.id, subscriber_service_id = sub_serv.id)
+            if not existing_links:
+                link = ServiceInstanceLink(provider_service_instance = obj, subscriber_service = sub_serv)
+                link.save()
 
     def can_delete(self, obj):
         return super(XOSONOSApp, self).can_delete(obj)
