@@ -48,12 +48,12 @@ class ONOSServiceAdmin(ReadOnlyAwareAdmin):
 class ONOSAppForm(forms.ModelForm):
     def __init__(self,*args,**kwargs):
         super (ONOSAppForm,self ).__init__(*args,**kwargs)
-        self.fields['kind'].widget.attrs['readonly'] = True
+#        self.fields['kind'].widget.attrs['readonly'] = True
         self.fields['provider_service'].queryset = ONOSService.objects.all()
         if (not self.instance) or (not self.instance.pk):
             # default fields for an 'add' form
-            self.fields['kind'].initial = ONOS_KIND
-            self.fields['creator'].initial = get_request().user
+#            self.fields['kind'].initial = ONOS_KIND
+#            self.fields['creator'].initial = get_request().user
             if ONOSService.objects.exists():
                self.fields["provider_service"].initial = ONOSService.objects.all()[0]
 
@@ -67,10 +67,9 @@ class ONOSAppForm(forms.ModelForm):
 class ONOSAppAdmin(ReadOnlyAwareAdmin):
     list_display = ('backend_status_icon', 'name', )
     list_display_links = ('backend_status_icon', 'name')
-    fieldsets = [ (None, {'fields': ['backend_status_text', 'kind', 'name', 'provider_service', 'subscriber_service', 'service_specific_attribute', "dependencies",
-                                     'creator'],
+    fieldsets = [ (None, {'fields': ['backend_status_text', 'kind', 'name', 'provider_service', 'service_specific_attribute', "dependencies"],
                           'classes':['suit-tab suit-tab-general']})]
-    readonly_fields = ('backend_status_text', 'instance', 'service_specific_attribute')
+    readonly_fields = ('backend_status_text', 'service_specific_attribute')
     inlines = [TenantAttrAsTabInline]
     form = ONOSAppForm
 
