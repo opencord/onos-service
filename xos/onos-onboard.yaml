@@ -30,9 +30,6 @@ topology_template:
           # The following will concatenate with base_url automatically, if
           # base_url is non-null.
           xproto: ./
-          admin: admin.py
-          admin_template: templates/onosadmin.html
-          #tosca_custom_types: exampleservice.yaml
           tosca_resource: tosca/resources/onosservice.py, tosca/resources/onosapp.py
           private_key: file:///opt/xos/key_import/onos_rsa
           public_key: file:///opt/xos/key_import/onos_rsa.pub

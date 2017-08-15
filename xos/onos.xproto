@@ -12,4 +12,6 @@ message ONOSService (Service){
      required int32 rest_port = 2 [default = 8181, null = False, db_index = False, blank = False];
      required bool no_container = 3 [default = False, null = False, db_index = False, blank = True];
      optional string node_key = 4 [db_index = False, max_length = 1024, null = True, content_type = "stripped", blank = True];
+     optional string rest_username = 5 [db_index = False, max_length = 255, null = True, content_type = "stripped", blank = True, default="karaf"];
+     optional string rest_password = 6 [db_index = False, max_length = 255, null = True, content_type = "stripped", blank = True, default="karaf"];
 }
