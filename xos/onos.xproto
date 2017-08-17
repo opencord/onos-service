@@ -1,17 +1,20 @@
 option kind="onos";
 option name="onos";
-option verbose_name="ONOS Service";
 
 message ONOSApp (ServiceInstance){
-     optional string install_dependencies = 1 [db_index = False, null = True, blank = True];
-     optional string dependencies = 2 [db_index = False, null = True, blank = True];
+    option verbose_name="ONOS Application";
+
+    optional string install_dependencies = 1 [db_index = False, null = True, blank = True];
+    optional string dependencies = 2 [db_index = False, null = True, blank = True];
 }
 
 message ONOSService (Service){
-     optional string rest_hostname = 1 [db_index = False, max_length = 255, null = True, content_type = "stripped", blank = True];
-     required int32 rest_port = 2 [default = 8181, null = False, db_index = False, blank = False];
-     required bool no_container = 3 [default = False, null = False, db_index = False, blank = True];
-     optional string node_key = 4 [db_index = False, max_length = 1024, null = True, content_type = "stripped", blank = True];
-     optional string rest_username = 5 [db_index = False, max_length = 255, null = True, content_type = "stripped", blank = True, default="karaf"];
-     optional string rest_password = 6 [db_index = False, max_length = 255, null = True, content_type = "stripped", blank = True, default="karaf"];
+    option verbose_name="ONOS Service";
+
+    optional string rest_hostname = 1 [db_index = False, max_length = 255, null = True, content_type = "stripped", blank = True];
+    required int32 rest_port = 2 [default = 8181, null = False, db_index = False, blank = False];
+    required bool no_container = 3 [default = False, null = False, db_index = False, blank = True];
+    optional string node_key = 4 [db_index = False, max_length = 1024, null = True, content_type = "stripped", blank = True];
+    optional string rest_username = 5 [db_index = False, max_length = 255, null = True, content_type = "stripped", blank = True, default="karaf"];
+    optional string rest_password = 6 [db_index = False, max_length = 255, null = True, content_type = "stripped", blank = True, default="karaf"];
 }
