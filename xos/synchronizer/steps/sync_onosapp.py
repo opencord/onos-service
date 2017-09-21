@@ -24,6 +24,7 @@ import re
 import json
 from collections import OrderedDict
 from xosconfig import Config
+from synchronizers.new_base.syncstep import DeferredException
 from synchronizers.new_base.ansible_helper import run_template
 from synchronizers.new_base.SyncInstanceUsingAnsible import SyncInstanceUsingAnsible
 from synchronizers.new_base.modelaccessor import *
@@ -133,6 +134,11 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
         # attribute can override service attributes.
         attrs = o.owner.serviceattribute_dict
         attrs.update(o.tenantattribute_dict)
+
+        # Check to see if we're waiting on autoconfig
+        if (attrs.get("autogenerate") in ["vtn-network-cfg",]) and \
+           (not attrs.get("rest_onos/v1/network/configuration/")):
+            raise DeferredException("Network configuration is not populated yet")
 
         ordered_attrs = attrs.keys()
 
