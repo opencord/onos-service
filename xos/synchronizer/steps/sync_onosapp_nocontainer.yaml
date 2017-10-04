@@ -39,9 +39,14 @@
 
   tasks:
 {% if install_dependencies %}
-  # Couldn't figure out how to get uri module to accept JSON in a string
   - name: Install ONOS apps by URL
-    command: curl -sS --user onos:rocks -X POST -HContent-Type:application/json -d '{{ '{{' }} item.body | to_json {{ '}}' }}' http://{{ rest_hostname }}:{{ rest_port }}/{{ '{{' }} item.endpoint {{ '}}' }}
+    uri:
+        url: "http://{{ rest_hostname }}:{{ rest_port }}/{{ '{{' }}  item.endpoint {{ '}}' }}"
+        body: "{{ '{{' }} item.body | to_json {{ '}}' }}"
+        user: onos
+        password: rocks
+        body_format: json
+        method: POST
     with_items:
        {% for install_dependency in install_dependencies %}
        - endpoint: "onos/v1/applications"
