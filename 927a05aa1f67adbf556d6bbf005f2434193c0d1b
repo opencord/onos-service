@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "9a5c5d37_bfd39d37",
+        "filename": "xos/synchronizer/steps/sync_onosapp_nocontainer.yaml",
+        "patchSetId": 2
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1000016
+      },
+      "writtenOn": "2017-10-05T00:58:50Z",
+      "side": 1,
+      "message": "Hardcoding was unintentional. Will fix.",
+      "parentUuid": "9a5c5d37_1ff629d8",
+      "range": {
+        "startLine": 44,
+        "startChar": 21,
+        "endLine": 44,
+        "endChar": 35
+      },
+      "revId": "927a05aa1f67adbf556d6bbf005f2434193c0d1b",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a5c5d37_ff0235b3",
         "filename": "xos/synchronizer/steps/sync_onosapp_nocontainer.yaml",
         "patchSetId": 2
@@ -36,6 +60,30 @@
       "writtenOn": "2017-10-05T00:36:58Z",
       "side": 1,
       "message": "Is this configurable or hardcoded?",
+      "range": {
+        "startLine": 46,
+        "startChar": 0,
+        "endLine": 47,
+        "endChar": 23
+      },
+      "revId": "927a05aa1f67adbf556d6bbf005f2434193c0d1b",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a5c5d37_df1651f1",
+        "filename": "xos/synchronizer/steps/sync_onosapp_nocontainer.yaml",
+        "patchSetId": 2
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1000016
+      },
+      "writtenOn": "2017-10-05T00:58:50Z",
+      "side": 1,
+      "message": "This was hardcoded in the original playbook.",
+      "parentUuid": "9a5c5d37_ff0235b3",
       "range": {
         "startLine": 46,
         "startChar": 0,
