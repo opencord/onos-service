@@ -47,6 +47,7 @@
         password: rocks
         body_format: json
         method: POST
+        status_code: 200, 409
     with_items:
        {% for install_dependency in install_dependencies %}
        - endpoint: "onos/v1/applications"
