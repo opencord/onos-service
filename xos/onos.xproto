@@ -19,3 +19,10 @@ message ONOSService (Service){
     optional string rest_username = 5 [db_index = False, max_length = 255, null = True, content_type = "stripped", blank = True, default="karaf"];
     optional string rest_password = 6 [db_index = False, max_length = 255, null = True, content_type = "stripped", blank = True, default="karaf"];
 }
+
+message ONOSComponentConfigAttribute (XOSBase) {
+     required string name = 1 [help_text = "Attribute Name", max_length = 128, null = False, db_index = False, blank = False];
+     required string value = 2 [help_text = "Attribute Value", null = False, db_index = False, blank = False];
+     required manytoone onos_app:ONOSApp:onos_attributes = 3 [help_text = "The Tenant this attribute is associated with", null = False, db_index = True, blank = False];
+     required string component = 4 [help_text = "Component Name", max_length = 128, null = False, db_index = False, blank = False];
+}
