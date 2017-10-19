@@ -207,6 +207,7 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
         fields["files_dir"] = o.files_dir
         fields["appname"] = o.name
         fields["rest_configs"] = o.rest_configs
+        fields["component_configs"] = o.component_configs
         fields["rest_hostname"] = onos.rest_hostname
         fields["rest_port"] = onos.rest_port
 
@@ -229,7 +230,6 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
 
         fields["config_fns"] = o.config_fns
         fields["early_rest_configs"] = o.early_rest_configs
-        fields["component_configs"] = o.component_configs
         fields["node_key_fn"] = o.node_key_fn
 
         if (instance.isolation=="container"):
