@@ -70,6 +70,18 @@
         {% endfor %}
 {% endif %}
 
+{% if component_configs %}
+  - name: Add ONOS component configuration values
+    uri:
+      url: http://{{ rest_hostname }}:{{ rest_port }}/onos/v1/configuration/{{ '{{' }} item.component {{ '}}' }} #http://localhost:8181/onos/v1/configuration/
+      body: "{{ '{{' }} item.config_params {{ '}}' }}"
+      body_format: json
+      method: POST
+      user: karaf
+      password: karaf
+    with_items: "{{ '{{' }} component_configs {{ '}}' }}"
+{% endif %}
+
 {% if rest_configs %}
 # Do this after services have been activated, or it will cause an exception.
 # vOLT will re-read its net config; vbng may not.
