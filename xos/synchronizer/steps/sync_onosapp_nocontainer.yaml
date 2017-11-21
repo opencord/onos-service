@@ -43,8 +43,8 @@
     uri:
         url: "http://{{ rest_hostname }}:{{ rest_port }}/{{ '{{' }}  item.endpoint {{ '}}' }}"
         body: "{{ '{{' }} item.body | to_json {{ '}}' }}"
-        user: onos
-        password: rocks
+        user: {{ rest_username }}
+        password: {{ rest_password }}
         body_format: json
         method: POST
         status_code: 200, 409
