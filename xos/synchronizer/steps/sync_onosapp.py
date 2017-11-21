@@ -59,14 +59,7 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
         return None
 
     def get_onos_service(self, o):
-        if not o.owner:
-            return None
-
-        onoses = ONOSService.objects.filter(id=o.owner.id)
-        if not onoses:
-            return None
-
-        return onoses[0]
+        return o.owner.leaf_model
 
     def is_no_container(self, o):
         return self.get_onos_service(o).no_container
@@ -209,6 +202,8 @@ class SyncONOSApp(SyncInstanceUsingAnsible):
         fields["rest_configs"] = o.rest_configs
         fields["component_configs"] = o.component_configs
         fields["rest_hostname"] = onos.rest_hostname
+        fields["rest_username"] = onos.rest_username
+        fields["rest_password"] = onos.rest_password
         fields["rest_port"] = onos.rest_port
 
         if o.dependencies:
