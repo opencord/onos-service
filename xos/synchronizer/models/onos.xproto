@@ -1,6 +1,7 @@
 option kind="onos";
 option app_label = "onos";
 option name="onos";
+option legacy="True";
 
 message ONOSApp (ServiceInstance){
     option verbose_name="ONOS Application";
