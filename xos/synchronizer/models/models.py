@@ -13,10 +13,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from xos.exceptions import *
+from models_decl import *
 
-def __init__(self, *args, **kwargs):
-    onos_services = ONOSService.objects.all()
-    if onos_services:
-        self._meta.get_field("owner").default = onos_services[0].id
-    super(ONOSApp, self).__init__(*args, **kwargs)
+class ONOSApp(ONOSApp_decl):
+    class Meta:
+        proxy = True
 
+    def __init__(self, *args, **kwargs):
+        onos_services = ONOSService.objects.all()
+        if onos_services:
+            self._meta.get_field("owner").default = onos_services[0].id
+        super(ONOSApp, self).__init__(*args, **kwargs)
+
+class ONOSService(ONOSService_decl):
+    class Meta:
+        proxy = True
