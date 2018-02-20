@@ -5,6 +5,7 @@ option legacy="True";
 
 message ONOSApp (ServiceInstance){
     option verbose_name="ONOS Application";
+    option owner_class_name="ONOSService";
 
     optional string install_dependencies = 1 [db_index = False, null = True, blank = True];
     optional string dependencies = 2 [db_index = False, null = True, blank = True];
