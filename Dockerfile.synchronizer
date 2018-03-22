@@ -13,12 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# This Dockerfile is DEPRECATED and will be removed imminently.
 
 # xosproject/onos-synchronizer
 FROM xosproject/xos-synchronizer-base:candidate
 
-COPY . /opt/xos/synchronizers/onos
+COPY xos/synchronizer /opt/xos/synchronizers/onos
+COPY VERSION /opt/xos/synchronizers/onos/
 
 ENTRYPOINT []
 
