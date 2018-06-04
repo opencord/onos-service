@@ -13,13 +13,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import logging
+import os
 
-#!/bin/bash
+from nose2.events import Plugin
 
-MODE=`docker inspect --format '{{ .HostConfig.NetworkMode }}' $1  | tr -d '\n' | tr -d '\r'`
-if [[ "$MODE" == "host" ]]; then
-    echo -n "127.0.0.1"
-else
-    docker inspect --format '{{ .NetworkSettings.IPAddress }}' $1 | tr -d '\n' | tr -d '\r'
-fi
+log = logging.getLogger('nose2.plugins.excludeignoredfiles')
 
+class ExcludeIgnoredFiles(Plugin):
+    commandLineSwitch = (None, 'exclude-ignored-files', 'Exclude that which should be excluded')
+
+    def matchPath(self, event):
+        if event.path.endswith(".py"):
+            text = open(event.path, "r").read()
+            if "test_framework: ignore" in text.lower():
+                log.info("Ignoring %s" % event.path)
+                event.handled = True
+                return False
