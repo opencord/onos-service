@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "ce0b3727_7775e588",
+        "filename": "xos/synchronizer/models/onos.xproto",
+        "patchSetId": 2
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1000116
+      },
+      "writtenOn": "2018-06-07T10:10:55Z",
+      "side": 1,
+      "message": "you might want to include the version of the app. if version is not changed you don\u0027t have to act against the already present ONOS app.",
+      "revId": "7ac5276bdd6ddc7c817a84a11d13714b110ed676",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "05d313d4_8eced259",
         "filename": "xos/synchronizer/steps/sync_onos_app.py",
         "patchSetId": 2
