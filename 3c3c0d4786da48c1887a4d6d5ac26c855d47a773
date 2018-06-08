@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "7ec026cf_16f95eac",
+        "filename": "xos/synchronizer/steps/sync_onos_app.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 148,
+      "author": {
+        "id": 1000007
+      },
+      "writtenOn": "2018-06-08T01:33:20Z",
+      "side": 1,
+      "message": "It fails if the data are wrong or the app is not installed, and in that case it won\u0027t work... the app.version mismatch also fail the sync_step and in that case we don\u0027t want to retry...  The only case in which we want to retry is if ONOS was not reachable in that moment..\n\nbut I see your point, let me think how to address it (or I\u0027m open to suggestions :) )",
+      "parentUuid": "f1895b83_0557e0ee",
+      "range": {
+        "startLine": 148,
+        "startChar": 8,
+        "endLine": 148,
+        "endChar": 30
+      },
+      "revId": "3c3c0d4786da48c1887a4d6d5ac26c855d47a773",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "2b5651fb_0145c5ff",
         "filename": "xos/synchronizer/steps/sync_onos_app.py",
         "patchSetId": 4
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "f875b1e3_31e98dd2",
+        "filename": "xos/synchronizer/steps/sync_onos_app.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 152,
+      "author": {
+        "id": 1000007
+      },
+      "writtenOn": "2018-06-08T01:33:20Z",
+      "side": 1,
+      "message": "Good point, addressed",
+      "parentUuid": "2b5651fb_0145c5ff",
+      "range": {
+        "startLine": 152,
+        "startChar": 99,
+        "endLine": 152,
+        "endChar": 107
+      },
+      "revId": "3c3c0d4786da48c1887a4d6d5ac26c855d47a773",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "a26c2b5b_fdb4e531",
         "filename": "xos/synchronizer/steps/sync_onos_app.py",
         "patchSetId": 4
@@ -59,6 +107,30 @@
       "writtenOn": "2018-06-08T01:25:59Z",
       "side": 1,
       "message": "What if ONOS has been restarted? IIRC in the old synchronizer we activate it again, ignoring failure if it returns the error code for an app already activated.",
+      "range": {
+        "startLine": 158,
+        "startChar": 8,
+        "endLine": 159,
+        "endChar": 61
+      },
+      "revId": "3c3c0d4786da48c1887a4d6d5ac26c855d47a773",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "e1724d4f_9e755d1b",
+        "filename": "xos/synchronizer/steps/sync_onos_app.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 159,
+      "author": {
+        "id": 1000007
+      },
+      "writtenOn": "2018-06-08T01:33:20Z",
+      "side": 1,
+      "message": "not sure what do you mean, if we manually restart ONOS, XOS will never know... how can we automatically kickoff a new loop?",
+      "parentUuid": "a26c2b5b_fdb4e531",
       "range": {
         "startLine": 158,
         "startChar": 8,
