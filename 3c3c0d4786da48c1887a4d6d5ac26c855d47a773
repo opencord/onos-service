@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f1895b83_0557e0ee",
+        "filename": "xos/synchronizer/steps/sync_onos_app.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 148,
+      "author": {
+        "id": 1000016
+      },
+      "writtenOn": "2018-06-08T01:25:59Z",
+      "side": 1,
+      "message": "Shouldn\u0027t you retry in the case of failure?",
+      "range": {
+        "startLine": 148,
+        "startChar": 8,
+        "endLine": 148,
+        "endChar": 30
+      },
+      "revId": "3c3c0d4786da48c1887a4d6d5ac26c855d47a773",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "2b5651fb_0145c5ff",
+        "filename": "xos/synchronizer/steps/sync_onos_app.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 152,
+      "author": {
+        "id": 1000016
+      },
+      "writtenOn": "2018-06-08T01:25:59Z",
+      "side": 1,
+      "message": "Do all apps have ids? From the samples, it looked like apps with URLs did not have ids.",
+      "range": {
+        "startLine": 152,
+        "startChar": 99,
+        "endLine": 152,
+        "endChar": 107
+      },
+      "revId": "3c3c0d4786da48c1887a4d6d5ac26c855d47a773",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "a26c2b5b_fdb4e531",
+        "filename": "xos/synchronizer/steps/sync_onos_app.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 159,
+      "author": {
+        "id": 1000016
+      },
+      "writtenOn": "2018-06-08T01:25:59Z",
+      "side": 1,
+      "message": "What if ONOS has been restarted? IIRC in the old synchronizer we activate it again, ignoring failure if it returns the error code for an app already activated.",
+      "range": {
+        "startLine": 158,
+        "startChar": 8,
+        "endLine": 159,
+        "endChar": 61
+      },
+      "revId": "3c3c0d4786da48c1887a4d6d5ac26c855d47a773",
+      "serverId": "2a2bfe1b-c5c2-48ed-9ac8-16438ab24388",
+      "unresolved": false
+    }
+  ]
+}
