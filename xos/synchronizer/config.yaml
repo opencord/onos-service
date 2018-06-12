@@ -15,10 +15,20 @@
 
 
 name: onos
-accessor:
-  username: xosadmin@opencord.org
-  password: "@/opt/xos/services/onos/credentials/xosadmin@opencord.org"
+required_models:
+  - ONOSService
+  - ONOSApp
 dependency_graph: "/opt/xos/synchronizers/onos/model-deps"
 steps_dir: "/opt/xos/synchronizers/onos/steps"
 sys_dir: "/opt/xos/synchronizers/onos/sys"
 models_dir: "/opt/xos/synchronizers/onos/models"
+logging:
+  version: 1
+  handlers:
+    console:
+      class: logging.StreamHandler
+  loggers:
+    'multistructlog':
+      handlers:
+          - console
+      level: DEBUG
