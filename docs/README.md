@@ -42,5 +42,5 @@ for the corresponding `ServiceInstanceAttribute`s and if any are found:
 
 > ONOS Applications can be activated (if they already present in the container),
 > in that case you just need to provide the `app_id`, or they can be installed from a remote `.oar`,
-> in which case you just need to provide an `url` 
+> in which case you need to also provide an `url` and a `version`
  

@@ -209,7 +209,7 @@ class TestSyncOnosApp(unittest.TestCase):
 
         self.onos_app.url = 'http://onf.org/maven/...'
         self.onos_app.version = "1.13.1"
-        self.onos_app.app_id = None
+        self.onos_app.app_id = "org.onosproject.vrouter"
 
         expected = {
             'activate': True,
@@ -221,9 +221,10 @@ class TestSyncOnosApp(unittest.TestCase):
                additional_matcher=functools.partial(match_json, expected),
                json=self.vrouter_app_response)
 
-        m.get("http://onos-url:8181/onos/v1/applications/org.onosproject.vrouter",
-              status_code=200,
-              json=self.vrouter_app_response)
+        m.get("http://onos-url:8181/onos/v1/applications/org.onosproject.vrouter", [
+            {'status_code': 404, 'text': "foo"},
+            {'status_code': 200, 'json': self.vrouter_app_response}
+        ])
 
         self.si.serviceinstanceattribute_dict = {}
 
@@ -231,7 +232,7 @@ class TestSyncOnosApp(unittest.TestCase):
             mock_si.return_value = [self.si]
             self.sync_step().sync_record(self.onos_app)
         self.assertTrue(m.called)
-        self.assertEqual(m.call_count, 2)
+        self.assertEqual(m.call_count, 3)
         self.assertEqual(self.onos_app.app_id, self.vrouter_app_response["name"])
 
     @requests_mock.Mocker()
@@ -280,7 +281,7 @@ class TestSyncOnosApp(unittest.TestCase):
 
         self.onos_app.url = 'http://onf.org/maven/...'
         self.onos_app.version = "1.14.2"
-        self.onos_app.app_id = None
+        self.onos_app.app_id = "org.onosproject.vrouter"
 
         expected = {
             'activate': True,
@@ -292,9 +293,10 @@ class TestSyncOnosApp(unittest.TestCase):
                additional_matcher=functools.partial(match_json, expected),
                json=self.vrouter_app_response)
 
-        m.get("http://onos-url:8181/onos/v1/applications/org.onosproject.vrouter",
-              status_code=200,
-              json=self.vrouter_app_response)
+        m.get("http://onos-url:8181/onos/v1/applications/org.onosproject.vrouter", [
+            {'status_code': 404, 'text': "foo"},
+            {'status_code': 200, 'json': self.vrouter_app_response}
+        ])
 
         self.si.serviceinstanceattribute_dict = {}
 
@@ -304,9 +306,31 @@ class TestSyncOnosApp(unittest.TestCase):
             self.sync_step().sync_record(self.onos_app)
 
         self.assertTrue(m.called)
-        self.assertEqual(m.call_count, 2)
+        self.assertEqual(m.call_count, 3)
         self.assertEqual(self.onos_app.app_id, self.vrouter_app_response["name"])
         self.assertEqual(e.exception.message, "The version of org.onosproject.vrouter you installed (1.13.1) is not the same you requested (1.14.2)")
+
+    @requests_mock.Mocker()
+    def test_handle_409(self, m):
+        """
+        A 409 "Application Already installed" response is not an error. This should not happen as we check if the app is installed.
+        """
+
+        self.onos_app.url = 'http://onf.org/maven/...'
+        self.onos_app.version = "1.14.2"
+        self.onos_app.app_id = "org.onosproject.vrouter"
+
+        m.post("/onos/v1/applications",
+               status_code=409)
+
+        step = self.sync_step()
+        with patch.object(step, "check_app_installed") as mock_check_installed:
+            mock_check_installed.return_value = False
+
+            step.sync_record(self.onos_app)
+
+        self.assertTrue(m.called)
+        self.assertEqual(m.call_count, 1)
 
     @requests_mock.Mocker()
     def test_config_delete(self, m):

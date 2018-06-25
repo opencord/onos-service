@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -91,11 +90,13 @@ class SyncONOSApp(SyncStep):
             o.version = request.json()["version"]
 
     def check_app_installed(self, o, onos_url, onos_basic_auth):
+        log.debug("Checking if app is installed", app=o.app_id)
         url = '%s/onos/v1/applications/%s' % (onos_url, o.app_id)
         request = requests.get(url, auth=onos_basic_auth)
 
         if request.status_code == 200:
             if "version" in request.json() and o.version == request.json()["version"]:
+                log.debug("App is installed", app=o.app_id)
                 return True
             else:
                 # uninstall the application
@@ -106,23 +107,19 @@ class SyncONOSApp(SyncStep):
             return False
         else:
             log.error("Request failed", response=request.text)
-            raise Exception("Failed to read application %s from ONOS: %s" % (url, request.text))
+            raise Exception("Failed to read application %s from ONOS aaa: %s" % (url, request.text))
 
     def install_app(self, o, onos_url, onos_basic_auth):
-        log.info("Installing app from url %s" % o.url)
+        log.info("Installing app from url %s" % o.url, app=o.app_id, version=o.version)
 
-        # check is the already installed app is the correct version (if it has no app_id is not installed)
-        is_installed = False
-        if o.app_id and o.app_id is not None:
-            is_installed = self.check_app_installed(o, onos_url, onos_basic_auth)
+        # check is the already installed app is the correct version
+        is_installed = self.check_app_installed(o, onos_url, onos_basic_auth)
 
         if is_installed:
             # if the app is already installed we don't need to do anything
+            log.info("App is installed, skipping install", app=o.app_id)
             return
 
-        if not o.version or o.version is None:
-            # TODO move this validation in the model.py (if the url is there version must there and app_id must not)
-            raise Exception('You need to specify a version')
         data = {
             'activate': True,
             'url': o.url
@@ -130,18 +127,22 @@ class SyncONOSApp(SyncStep):
         url = '%s/onos/v1/applications' % onos_url
         request = requests.post(url, json=data, auth=onos_basic_auth)
 
+        if request.status_code == 409:
+            log.info("App was already installed", app=o.app_id, test=request.text)
+            return
+
         if request.status_code != 200:
             log.error("Request failed", response=request.text)
             raise Exception("Failed to add application %s to ONOS: %s" % (url, request.text))
 
-        o.app_id = request.json()["name"]
+        log.debug("App from url %s installed" % o.url, app=o.app_id, version=o.version)
 
         url = '%s/onos/v1/applications/%s' % (onos_url, o.app_id)
         request = requests.get(url, auth=onos_basic_auth)
 
         if request.status_code != 200:
             log.error("Request failed", response=request.text)
-            raise Exception("Failed to read application %s from ONOS: %s" % (url, request.text))
+            raise Exception("Failed to read application %s from ONOS: %s while checking correct version" % (url, request.text))
         else:
             if o.version != request.json()["version"]:
                 raise Exception("The version of %s you installed (%s) is not the same you requested (%s)" % (o.app_id, request.json()["version"], o.version))

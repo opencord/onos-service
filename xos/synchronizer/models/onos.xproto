@@ -1,15 +1,15 @@
-option kind="onos";
 option app_label = "onos";
 option name="onos";
+option legacy="True";
 
 message ONOSApp (ServiceInstance){
     option verbose_name="ONOS Application";
     option owner_class_name="ONOSService";
 
-    optional string app_id = 1 [db_index = False, null = True, blank = False];
+    required string app_id = 1 [db_index = False, null = False, blank = False];
     required string dependencies = 2 [help_text="Comma separated list of required applications", db_index = False, null = True, blank = True];
     optional string url = 3 [help_text="URL at which the application is available, if it needs to be downloaded", db_index = False, null = True, blank = False];
-    required string version = 4 [db_index = False, null = True, blank = False];
+    optional string version = 4 [db_index = False, null = True, blank = False];
 }
 
 message ONOSService (Service){
