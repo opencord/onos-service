@@ -44,6 +44,7 @@ topology_template:
     cord-config:
       type: tosca.nodes.ONOSApp
       properties:
+        app_id: org.opencord.cord-config
         name: cord-config
         url: https://oss.sonatype.org/content/repositories/public/org/opencord/cord-config/1.4.0-SNAPSHOT/cord-config-1.4.0-20180604.071543-275.oar
         version: 1.4.0.SNAPSHOT
