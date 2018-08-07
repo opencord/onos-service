@@ -14,7 +14,7 @@
 
 # xosproject/onos-synchronizer
 
-FROM xosproject/xos-synchronizer-base:2.0.0
+FROM xosproject/xos-synchronizer-base:master
 
 COPY xos/synchronizer /opt/xos/synchronizers/onos
 COPY VERSION /opt/xos/synchronizers/onos/
