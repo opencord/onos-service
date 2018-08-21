@@ -160,6 +160,30 @@ class TestSyncOnosApp(unittest.TestCase):
         self.assertFalse(m.called)
 
     @requests_mock.Mocker()
+    def test_dependencies_none(self, m):
+        """ App should sync if dependencies is set to None """
+
+        self.onos_app.dependencies = None
+
+        m.post("http://onos-url:8181/onos/v1/applications/org.onosproject.vrouter/active",
+               status_code=200,
+               additional_matcher=match_none)
+
+        m.get("http://onos-url:8181/onos/v1/applications/org.onosproject.vrouter",
+               status_code=200,
+               json=self.vrouter_app_response)
+
+        self.si.serviceinstanceattribute_dict = {}
+
+        with patch.object(ServiceInstance.objects, "get_items") as mock_si:
+            mock_si.return_value = [self.si]
+            self.sync_step().sync_record(self.onos_app)
+
+        self.assertTrue(m.called)
+        self.assertEqual(m.call_count, 2)
+        self.assertEqual(self.onos_app.version, self.vrouter_app_response["version"])
+
+    @requests_mock.Mocker()
     def test_app_sync_local_app_no_config(self, m):
         """
         Activate an application that is already installed in ONOS

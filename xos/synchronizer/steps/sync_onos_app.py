@@ -41,7 +41,9 @@ class SyncONOSApp(SyncStep):
         :param deps: comma separated list of application names
         :return: bool
         """
-        for dep in [x.strip() for x in str(deps).split(',') if x is not ""]:
+        if not deps:
+            return True
+        for dep in [x.strip() for x in deps.split(',') if x is not ""]:
             try:
                 app = ONOSApp.objects.get(app_id=dep)
                 if not app.backend_code == 1:
