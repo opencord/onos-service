@@ -42,9 +42,13 @@ class KubernetesPodDetailsEventStep(EventStep):
 
         xos_service = value["labels"].get("xos_service")
         if not xos_service:
+            log.info("This pod has no xos_service label", labels=value["labels"])
             return
 
-        for service in ONOSService.objects.filter(name = xos_service):
+        log.info("Looking for ONOSServices", name=xos_service)
+        onoses = ONOSService.objects.filter(name = xos_service)
+        onoses = onoses + ONOSService.objects.filter(name = xos_service.lower())
+        for service in onoses:
             log.info("Dirtying ONOS Service", service=service)
             service.backend_code=0
             service.backend_status="resynchronize due to kubernetes event"
