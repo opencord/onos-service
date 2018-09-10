@@ -61,3 +61,9 @@ class KubernetesPodDetailsEventStep(EventStep):
                 app.backend_code=0
                 app.backend_status="resynchronize due to kubernetes event"
                 app.save(update_fields=["updated", "backend_code", "backend_status"], always_update_timestamp=True)
+
+                for attr in app.service_instance_attributes.all():
+                    log.info("Dirtying ServiceInstanceAttributes for App", app=app, attr=attr)
+                    attr.backend_code = 0
+                    attr.backend_status = "resynchronize due to kubernetes event"
+                    attr.save(update_fields=["updated", "backend_code", "backend_status"], always_update_timestamp=True)

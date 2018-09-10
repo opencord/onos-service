@@ -82,15 +82,25 @@ class TestKubernetesEvent(unittest.TestCase):
                                 backend_code=1,
                                 backend_status="succeeded")
 
+        self.attr = ServiceInstanceAttribute(
+            name="foo",
+            value="bar"
+        )
+
+        self.mockAllAttr = Mock()
+        self.mockAllAttr.all.return_value = [self.attr]
+
         self.app1 = ONOSApp(name="myapp1",
                            owner=self.onos,
                            backend_code=1,
-                           backend_status="succeeded")
+                           backend_status="succeeded",
+                           service_instance_attributes=self.mockAllAttr)
 
         self.app2 = ONOSApp(name="myapp2",
                            owner=self.onos,
                            backend_code=1,
-                           backend_status="succeeded")
+                           backend_status="succeeded",
+                           service_instance_attributes=self.mockAllAttr)
 
         self.onos.service_instances = MockObjectList([self.app1, self.app2])
 
@@ -103,7 +113,8 @@ class TestKubernetesEvent(unittest.TestCase):
     def test_process_event(self):
         with patch.object(ONOSService.objects, "get_items") as service_objects, \
              patch.object(ONOSService, "save", autospec=True) as service_save, \
-             patch.object(ONOSApp, "save", autospec=True) as app_save:
+             patch.object(ONOSApp, "save", autospec=True) as app_save, \
+             patch.object(ServiceInstanceAttribute, "save", autospec=True) as attr_save:
             service_objects.return_value = [self.onos]
 
             event_dict = {"status": "created",
@@ -128,6 +139,10 @@ class TestKubernetesEvent(unittest.TestCase):
                                             always_update_timestamp=True),
                                        call(self.app2, update_fields=["updated", "backend_code", "backend_status"],
                                             always_update_timestamp=True)])
+
+            self.assertEqual(self.attr.backend_code, 0)
+            self.assertEqual(self.attr.backend_status, "resynchronize due to kubernetes event")
+            self.assertEqual(attr_save.call_count, 2)
 
     def test_process_event_unknownstatus(self):
         with patch.object(ONOSService.objects, "get_items") as service_objects, \
