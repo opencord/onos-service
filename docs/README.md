@@ -14,15 +14,15 @@ The ONOS Service is responsible for:
 This service is comprised of two models:
 
 - `ONOSService`. Contains global service parameters. In addition to standard `Service` fields such as the `name` of the service, this model contains the following ONOS specific fields:
-  - `rest_hostname`. Hostname of ONOS rest API endpoint.
-  - `rest_port`. Port of ONOS rest endpoint.
-  - `rest_username`. Username to use when authenticating to ONOS.
-  - `rest_password`. Password to use when authenticating to ONOS.
+    - `rest_hostname`. Hostname of ONOS rest API endpoint.
+    - `rest_port`. Port of ONOS rest endpoint.
+    - `rest_username`. Username to use when authenticating to ONOS.
+    - `rest_password`. Password to use when authenticating to ONOS.
 - `ONOSApp` represents an ONOS application and tracks its dependencies. This model extends the `ServiceInstance` model, adding the following fields:
-  - `app_id`. Application identifier.
-  - `dependencies`. Comma-separated list of apps that must be installed before this app.
-  - `url`. URL at which the application is available, if it needs to be downloaded.
-  - `version`. Version of the app.
+    - `app_id`. Application identifier.
+    - `dependencies`. Comma-separated list of apps that must be installed before this app.
+    - `url`. URL at which the application is available, if it needs to be downloaded.
+    - `version`. Version of the app.
 
 In addtion to the above models, this service uses `ServiceAttributes` and
 `ServiceInstanceAttributes` to hold additional configuration details for the
