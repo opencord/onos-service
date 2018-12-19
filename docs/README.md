@@ -11,7 +11,7 @@ The ONOS Service is responsible for:
 
 ## Models
 
-This service is comprised of two models:
+This service is composed of two models:
 
 - `ONOSService`. Contains global service parameters. In addition to standard `Service` fields such as the `name` of the service, this model contains the following ONOS specific fields:
     - `rest_hostname`. Hostname of ONOS rest API endpoint.
@@ -24,7 +24,7 @@ This service is comprised of two models:
     - `url`. URL at which the application is available, if it needs to be downloaded.
     - `version`. Version of the app.
 
-In addtion to the above models, this service uses `ServiceAttributes` and
+In addition to the above models, this service uses `ServiceAttributes` and
 `ServiceInstanceAttributes` to hold additional configuration details for the
 ONOSService and ONOSApp models.
 
