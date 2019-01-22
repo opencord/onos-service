@@ -24,7 +24,7 @@ class ONOSApp(ONOSApp_decl):
     def save(self, *args, **kwargs):
 
         if self.url and not self.version:
-            raise XOSValidationError("If you specify and url, you also need to specify a version. ONOSApp:  %s" % self.name)
+            raise XOSValidationError("If you specify a url, you also need to specify a version. ONOSApp:  %s" % self.name)
 
         super(ONOSApp, self).save(*args, **kwargs)
 

@@ -5,18 +5,52 @@ option legacy="True";
 message ONOSApp (ServiceInstance){
     option verbose_name="ONOS Application";
     option owner_class_name="ONOSService";
+    option description = "An individual application within the ONOS Service";
 
-    required string app_id = 1 [db_index = False];
-    optional string dependencies = 2 [help_text="Comma separated list of required applications", db_index = False];
-    optional string url = 3 [help_text="URL at which the application is available, if it needs to be downloaded", db_index = False];
-    optional string version = 4 [db_index = False];
+    required string app_id = 1 [
+        help_text="Application identifier",
+        content_type = "stripped",
+        db_index = False,
+        max_length = 256];
+    optional string dependencies = 2 [
+        help_text="Comma separated list of required application application ids",
+        content_type = "stripped",
+        db_index = False,
+        max_length = 1024];
+    optional string url = 3 [
+        help_text="URL at which the application is available, if it needs to be downloaded",
+        content_type = "stripped",
+        db_index = False,
+        max_length = 1024];
+    optional string version = 4 [
+        help_text="Application version number",
+        content_type = "stripped",
+        db_index = False,
+        max_length = 256];
 }
 
 message ONOSService (Service){
     option verbose_name="ONOS Service";
+    option description = "Manages ONOS Applications contained within the ONOS Service";
 
-    required string rest_hostname = 1 [db_index = False, max_length = 255, content_type = "stripped"];
-    required int32 rest_port = 2 [default = 8181, db_index = False];
-    required string rest_username = 3 [db_index = False, max_length = 255, content_type = "stripped", default="karaf"];
-    required string rest_password = 4 [db_index = False, max_length = 255, content_type = "stripped", default="karaf"];
+    required string rest_hostname = 1 [
+        help_text = "Hostname of ONOS Service REST endpoint",
+        content_type = "stripped",
+        db_index = False,
+        max_length = 255];
+    required int32 rest_port = 2 [
+        help_text = "Port numnber of ONOS Service REST endpoint",
+        db_index = False,
+        default = 8181];
+    required string rest_username = 3 [
+        help_text = "Username to use when authenticating to ONOS",
+        content_type = "stripped", db_index = False,
+        default="karaf",
+        max_length = 255];
+    required string rest_password = 4 [
+        help_text = "Password to use when authenticating to ONOS",
+        content_type = "stripped",
+        db_index = False,
+        default="karaf",
+        max_length = 255];
 }
