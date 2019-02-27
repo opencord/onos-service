@@ -16,8 +16,8 @@
 import json
 import requests
 from requests.auth import HTTPBasicAuth
-from synchronizers.new_base.syncstep import SyncStep, model_accessor
-from synchronizers.new_base.modelaccessor import ONOSService, Service, ServiceAttribute
+from xossynchronizer.steps.syncstep import SyncStep
+from xossynchronizer.modelaccessor import ONOSService, Service, ServiceAttribute, model_accessor
 
 from xosconfig import Config
 from multistructlog import create_logger

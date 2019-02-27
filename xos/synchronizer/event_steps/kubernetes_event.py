@@ -17,8 +17,8 @@
 import json
 import os
 import sys
-from synchronizers.new_base.eventstep import EventStep
-from synchronizers.new_base.modelaccessor import ONOSApp, ONOSService
+from xossynchronizer.event_steps.eventstep import EventStep
+from xossynchronizer.modelaccessor import ONOSApp, ONOSService
 from xosconfig import Config
 from multistructlog import create_logger
 

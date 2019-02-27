@@ -20,27 +20,8 @@ import requests_mock
 
 import os, sys
 
-# Hack to load synchronizer framework
 test_path=os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
-xos_dir=os.path.join(test_path, "../../..")
-if not os.path.exists(os.path.join(test_path, "new_base")):
-    xos_dir=os.path.join(test_path, "../../../../../../orchestration/xos/xos")
-    services_dir = os.path.join(xos_dir, "../../xos_services")
-sys.path.append(xos_dir)
-sys.path.append(os.path.join(xos_dir, 'synchronizers', 'new_base'))
-# END Hack to load synchronizer framework
 
-# generate model from xproto
-def get_models_fn(service_name, xproto_name):
-    name = os.path.join(service_name, "xos", xproto_name)
-    if os.path.exists(os.path.join(services_dir, name)):
-        return name
-    else:
-        name = os.path.join(service_name, "xos", "synchronizer", "models", xproto_name)
-        if os.path.exists(os.path.join(services_dir, name)):
-            return name
-    raise Exception("Unable to find service=%s xproto=%s" % (service_name, xproto_name))
-# END generate model from xproto
 
 def match_none(req):
     return req.text == None
@@ -57,8 +38,6 @@ class TestSyncOnosApp(unittest.TestCase):
         global DeferredException
 
         self.sys_path_save = sys.path
-        sys.path.append(xos_dir)
-        sys.path.append(os.path.join(xos_dir, 'synchronizers', 'new_base'))
 
         # Setting up the config module
         from xosconfig import Config
@@ -67,13 +46,17 @@ class TestSyncOnosApp(unittest.TestCase):
         Config.init(config, "synchronizer-config-schema.yaml")
         # END Setting up the config module
 
-        from synchronizers.new_base.mock_modelaccessor_build import build_mock_modelaccessor
-        build_mock_modelaccessor(xos_dir, services_dir, [
-            get_models_fn("onos-service", "onos.xproto")
-        ])
-        import synchronizers.new_base.modelaccessor
+        from xossynchronizer.mock_modelaccessor_build import mock_modelaccessor_config
+        mock_modelaccessor_config(test_path, [("onos-service", "onos.xproto"),])
+
+        import xossynchronizer.modelaccessor
+        import mock_modelaccessor
+        reload(mock_modelaccessor) # in case nose2 loaded it in a previous test
+        reload(xossynchronizer.modelaccessor)      # in case nose2 loaded it in a previous test
 
         from sync_onos_app import SyncONOSApp, DeferredException, model_accessor
+
+        self.model_accessor = model_accessor
 
         # import all class names to globals
         for (k, v) in model_accessor.all_model_classes.items():
@@ -154,7 +137,7 @@ class TestSyncOnosApp(unittest.TestCase):
 
             app_get.return_value = [segment_routing, openflow]
             mock_si.return_value = [self.si]
-            self.sync_step().sync_record(self.onos_app)
+            self.sync_step(model_accessor=self.model_accessor).sync_record(self.onos_app)
 
         self.assertEqual(e.exception.message, 'Deferring installation of ONOSApp with id 1 as dependencies are not met')
         self.assertFalse(m.called)
@@ -177,7 +160,7 @@ class TestSyncOnosApp(unittest.TestCase):
 
         with patch.object(ServiceInstance.objects, "get_items") as mock_si:
             mock_si.return_value = [self.si]
-            self.sync_step().sync_record(self.onos_app)
+            self.sync_step(model_accessor=self.model_accessor).sync_record(self.onos_app)
 
         self.assertTrue(m.called)
         self.assertEqual(m.call_count, 2)
@@ -201,7 +184,7 @@ class TestSyncOnosApp(unittest.TestCase):
 
         with patch.object(ServiceInstance.objects, "get_items") as mock_si:
             mock_si.return_value = [self.si]
-            self.sync_step().sync_record(self.onos_app)
+            self.sync_step(model_accessor=self.model_accessor).sync_record(self.onos_app)
 
         self.assertTrue(m.called)
         self.assertEqual(m.call_count, 2)
@@ -220,7 +203,7 @@ class TestSyncOnosApp(unittest.TestCase):
 
         with patch.object(ServiceInstance.objects, "get_items") as mock_si:
             mock_si.return_value = [self.si]
-            self.sync_step().sync_record(self.onos_app)
+            self.sync_step(model_accessor=self.model_accessor).sync_record(self.onos_app)
         self.assertTrue(m.called)
         self.assertEqual(m.call_count, 2)
         self.assertEqual(self.onos_app.version, self.vrouter_app_response["version"])
@@ -254,7 +237,7 @@ class TestSyncOnosApp(unittest.TestCase):
 
         with patch.object(ServiceInstance.objects, "get_items") as mock_si:
             mock_si.return_value = [self.si]
-            self.sync_step().sync_record(self.onos_app)
+            self.sync_step(model_accessor=self.model_accessor).sync_record(self.onos_app)
         self.assertTrue(m.called)
         self.assertEqual(m.call_count, 3)
         self.assertEqual(self.onos_app.app_id, self.vrouter_app_response["name"])
@@ -292,7 +275,7 @@ class TestSyncOnosApp(unittest.TestCase):
 
         with patch.object(ServiceInstance.objects, "get_items") as mock_si:
             mock_si.return_value = [self.si]
-            self.sync_step().sync_record(self.onos_app)
+            self.sync_step(model_accessor=self.model_accessor).sync_record(self.onos_app)
         self.assertTrue(m.called)
         self.assertEqual(m.call_count, 4)
         self.assertEqual(self.onos_app.app_id, self.vrouter_app_response_updated["name"])
@@ -327,7 +310,7 @@ class TestSyncOnosApp(unittest.TestCase):
         with patch.object(ServiceInstance.objects, "get_items") as mock_si, \
             self.assertRaises(Exception) as e:
             mock_si.return_value = [self.si]
-            self.sync_step().sync_record(self.onos_app)
+            self.sync_step(model_accessor=self.model_accessor).sync_record(self.onos_app)
 
         self.assertTrue(m.called)
         self.assertEqual(m.call_count, 3)
@@ -347,7 +330,7 @@ class TestSyncOnosApp(unittest.TestCase):
         m.post("/onos/v1/applications",
                status_code=409)
 
-        step = self.sync_step()
+        step = self.sync_step(model_accessor=self.model_accessor)
         with patch.object(step, "check_app_installed") as mock_check_installed:
             mock_check_installed.return_value = False
 
@@ -361,7 +344,7 @@ class TestSyncOnosApp(unittest.TestCase):
         m.delete("http://onos-url:8181%s" % self.onos_app_attribute.name,
                status_code=204)
 
-        self.sync_step().delete_record(self.onos_app_attribute)
+        self.sync_step(model_accessor=self.model_accessor).delete_record(self.onos_app_attribute)
         self.assertTrue(m.called)
         self.assertEqual(m.call_count, 1)
 
@@ -370,7 +353,7 @@ class TestSyncOnosApp(unittest.TestCase):
         m.delete("http://onos-url:8181/onos/v1/applications/org.onosproject.vrouter/active",
                status_code=204)
 
-        self.sync_step().delete_record(self.onos_app)
+        self.sync_step(model_accessor=self.model_accessor).delete_record(self.onos_app)
         self.assertTrue(m.called)
         self.assertEqual(m.call_count, 1)
 
@@ -383,9 +366,10 @@ class TestSyncOnosApp(unittest.TestCase):
         m.delete("http://onos-url:8181/onos/v1/applications/org.onosproject.vrouter",
                  status_code=204)
 
-        self.sync_step().delete_record(self.onos_app)
+        self.sync_step(model_accessor=self.model_accessor).delete_record(self.onos_app)
         self.assertTrue(m.called)
         self.assertEqual(m.call_count, 1)
 
-
+if __name__ == '__main__':
+    unittest.main()
 
