@@ -15,14 +15,13 @@
 
 
 import json
-import os
-import sys
 from xossynchronizer.event_steps.eventstep import EventStep
 from xossynchronizer.modelaccessor import ONOSApp, ONOSService
 from xosconfig import Config
 from multistructlog import create_logger
 
 log = create_logger(Config().get('logging'))
+
 
 class KubernetesPodDetailsEventStep(EventStep):
     topics = ["xos.kubernetes.pod-details"]
@@ -52,18 +51,23 @@ class KubernetesPodDetailsEventStep(EventStep):
                 continue
 
             log.info("Dirtying ONOS Service", service=service)
-            service.backend_code=0
-            service.backend_status="resynchronize due to kubernetes event"
+            service.backend_code = 0
+            service.backend_status = "resynchronize due to kubernetes event"
             service.save(update_fields=["updated", "backend_code", "backend_status"], always_update_timestamp=True)
 
             for app in service.service_instances.all():
                 log.info("Dirtying ONOS App", app=app)
-                app.backend_code=0
-                app.backend_status="resynchronize due to kubernetes event"
+                app.backend_code = 0
+                app.backend_status = "resynchronize due to kubernetes event"
                 app.save(update_fields=["updated", "backend_code", "backend_status"], always_update_timestamp=True)
 
                 for attr in app.service_instance_attributes.all():
                     log.info("Dirtying ServiceInstanceAttributes for App", app=app, attr=attr)
                     attr.backend_code = 0
                     attr.backend_status = "resynchronize due to kubernetes event"
-                    attr.save(update_fields=["updated", "backend_code", "backend_status"], always_update_timestamp=True)
+                    attr.save(
+                        update_fields=[
+                            "updated",
+                            "backend_code",
+                            "backend_status"],
+                        always_update_timestamp=True)

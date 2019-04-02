@@ -15,19 +15,21 @@
 import unittest
 import json
 import functools
-from mock import patch, call, Mock, PropertyMock
+from mock import patch, Mock
 import requests_mock
 
-import os, sys
+import os
+import sys
 
-test_path=os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
+test_path = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
 
 
 def match_json(desired, req):
-    if desired!=req.json():
+    if desired != req.json():
         raise Exception("Got request %s, but body is not matching" % req.url)
         return False
     return True
+
 
 class TestSyncOnosService(unittest.TestCase):
 
@@ -43,11 +45,11 @@ class TestSyncOnosService(unittest.TestCase):
         # END Setting up the config module
 
         from xossynchronizer.mock_modelaccessor_build import mock_modelaccessor_config
-        mock_modelaccessor_config(test_path, [("onos-service", "onos.xproto"),])
+        mock_modelaccessor_config(test_path, [("onos-service", "onos.xproto"), ])
 
         import xossynchronizer.modelaccessor
         import mock_modelaccessor
-        reload(mock_modelaccessor) # in case nose2 loaded it in a previous test
+        reload(mock_modelaccessor)  # in case nose2 loaded it in a previous test
         reload(xossynchronizer.modelaccessor)      # in case nose2 loaded it in a previous test
 
         from sync_onos_service import SyncONOSService, model_accessor
@@ -57,7 +59,6 @@ class TestSyncOnosService(unittest.TestCase):
         # import all class names to globals
         for (k, v) in model_accessor.all_model_classes.items():
             globals()[k] = v
-
 
         self.sync_step = SyncONOSService
 
@@ -162,14 +163,16 @@ class TestSyncOnosService(unittest.TestCase):
                additional_matcher=functools.partial(match_json, json.loads(expected_conf)))
 
         with self.assertRaises(Exception) as e, \
-            patch.object(Service.objects, "get_items") as service_mock:
+                patch.object(Service.objects, "get_items") as service_mock:
 
             service_mock.return_value = [self.service]
             self.sync_step(model_accessor=self.model_accessor).sync_record(self.onos)
 
         self.assertTrue(m.called)
         self.assertEqual(m.call_count, 1)
-        self.assertEqual(e.exception.message, "Failed to add config http://onos-url:8181/onos/v1/network/configuration/apps/org.onosproject.olt in ONOS")
+        self.assertEqual(
+            e.exception.message,
+            "Failed to add config http://onos-url:8181/onos/v1/network/configuration/apps/org.onosproject.olt in ONOS")
 
     @requests_mock.Mocker()
     def test_delete(self, m):
@@ -179,6 +182,7 @@ class TestSyncOnosService(unittest.TestCase):
         self.sync_step(model_accessor=self.model_accessor).delete_record(self.onos_service_attribute)
         self.assertTrue(m.called)
         self.assertEqual(m.call_count, 1)
+
 
 if __name__ == '__main__':
     unittest.main()

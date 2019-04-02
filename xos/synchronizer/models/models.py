@@ -17,6 +17,7 @@ from xos.exceptions import XOSValidationError
 from models_decl import ONOSApp_decl
 from models_decl import ONOSService_decl
 
+
 class ONOSApp(ONOSApp_decl):
     class Meta:
         proxy = True
@@ -24,12 +25,13 @@ class ONOSApp(ONOSApp_decl):
     def save(self, *args, **kwargs):
 
         if self.url and not self.version:
-            raise XOSValidationError("If you specify a url, you also need to specify a version. ONOSApp:  %s" % self.name)
+            raise XOSValidationError(
+                "If you specify a url, you also need to specify a version. ONOSApp:  %s" %
+                self.name)
 
         super(ONOSApp, self).save(*args, **kwargs)
 
 
 class ONOSService(ONOSService_decl):
-   class Meta:
-        proxy = True 
-
+    class Meta:
+        proxy = True

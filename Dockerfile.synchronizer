@@ -16,7 +16,15 @@
 
 # xosproject/onos-synchronizer
 
-FROM xosproject/xos-synchronizer-base:2.2.18
+FROM xosproject/alpine-grpc-base:0.9.0
+
+# Install pip packages
+COPY requirements.txt /tmp/requirements.txt
+RUN pip install -r /tmp/requirements.txt \
+ && pip freeze > /var/xos/pip_freeze_onos_service_`date -u +%Y%m%dT%H%M%S`
+ 
+
+# Copy files
 COPY xos/synchronizer /opt/xos/synchronizers/onos
 COPY VERSION /opt/xos/synchronizers/onos/
 
