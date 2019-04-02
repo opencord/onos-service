@@ -14,6 +14,7 @@
 
 from xossynchronizer.modelaccessor import Service
 
+
 class Helpers():
     @staticmethod
     def format_url(url):

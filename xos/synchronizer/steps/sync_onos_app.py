@@ -27,6 +27,7 @@ from helpers import Helpers
 log = create_logger(Config().get('logging'))
 log.info("config file", file=Config().get_config_file())
 
+
 class SyncONOSApp(SyncStep):
     provides = [ONOSApp]
     observes = [ONOSApp, ServiceInstanceAttribute]
@@ -44,21 +45,25 @@ class SyncONOSApp(SyncStep):
         """
         if not deps:
             return True
-        for dep in [x.strip() for x in deps.split(',') if x is not ""]:
+        for dep in [x.strip() for x in deps.split(',') if x != ""]:
             try:
                 app = ONOSApp.objects.get(app_id=dep)
                 if not app.backend_code == 1:
                     # backend_code == 1 means that the app has been pushed
                     return False
-            except IndexError, e:
+            except IndexError:
                 return False
         return True
 
     def add_config(self, o):
         log.info("Adding config %s" % o.name, model=o.tologdict())
         # getting onos url and auth
-        onos_url = "%s:%s" % (Helpers.format_url(o.service_instance.leaf_model.owner.leaf_model.rest_hostname), o.service_instance.leaf_model.owner.leaf_model.rest_port)
-        onos_basic_auth = HTTPBasicAuth(o.service_instance.leaf_model.owner.leaf_model.rest_username, o.service_instance.leaf_model.owner.leaf_model.rest_password)
+        onos_url = "%s:%s" % (Helpers.format_url(
+            o.service_instance.leaf_model.owner.leaf_model.rest_hostname),
+            o.service_instance.leaf_model.owner.leaf_model.rest_port)
+        onos_basic_auth = HTTPBasicAuth(
+            o.service_instance.leaf_model.owner.leaf_model.rest_username,
+            o.service_instance.leaf_model.owner.leaf_model.rest_password)
 
         # push configs (if any)
         url = o.name
@@ -145,10 +150,14 @@ class SyncONOSApp(SyncStep):
 
         if request.status_code != 200:
             log.error("Request failed", response=request.text)
-            raise Exception("Failed to read application %s from ONOS: %s while checking correct version" % (url, request.text))
+            raise Exception(
+                "Failed to read application %s from ONOS: %s while checking correct version" %
+                (url, request.text))
         else:
             if o.version != request.json()["version"]:
-                raise Exception("The version of %s you installed (%s) is not the same you requested (%s)" % (o.app_id, request.json()["version"], o.version))
+                raise Exception(
+                    "The version of %s you installed (%s) is not the same you requested (%s)" %
+                    (o.app_id, request.json()["version"], o.version))
 
     def sync_record(self, o):
         log.info("Sync'ing", model=o.tologdict())
@@ -156,7 +165,7 @@ class SyncONOSApp(SyncStep):
             # this is a ServiceInstanceAttribute model just push the config
             if 'ONOSApp' in o.service_instance.leaf_model.class_names:
                 return self.add_config(o)
-            return # if it's not an ONOSApp do nothing
+            return  # if it's not an ONOSApp do nothing
 
         if not self.check_app_dependencies(o.dependencies):
             raise DeferredException('Deferring installation of ONOSApp with id %s as dependencies are not met' % o.id)
@@ -176,8 +185,12 @@ class SyncONOSApp(SyncStep):
         log.info("Deleting config %s" % o.name)
         # getting onos url and auth
         onos_app = o.service_instance.leaf_model
-        onos_url = "%s:%s" % (Helpers.format_url(onos_app.owner.leaf_model.rest_hostname), onos_app.owner.leaf_model.rest_port)
-        onos_basic_auth = HTTPBasicAuth(onos_app.owner.leaf_model.rest_username, onos_app.owner.leaf_model.rest_password)
+        onos_url = "%s:%s" % (Helpers.format_url(
+            onos_app.owner.leaf_model.rest_hostname),
+            onos_app.owner.leaf_model.rest_port)
+        onos_basic_auth = HTTPBasicAuth(
+            onos_app.owner.leaf_model.rest_username,
+            onos_app.owner.leaf_model.rest_password)
 
         url = o.name
         if url[0] == "/":
@@ -191,7 +204,7 @@ class SyncONOSApp(SyncStep):
             log.error("Request failed", response=request.text)
             raise Exception("Failed to remove config %s from ONOS:  %s" % (url, request.text))
 
-    def uninstall_app(self,o, onos_url, onos_basic_auth):
+    def uninstall_app(self, o, onos_url, onos_basic_auth):
         log.info("Uninstalling app %s" % o.app_id)
         url = '%s/onos/v1/applications/%s' % (onos_url, o.app_id)
 
@@ -217,7 +230,7 @@ class SyncONOSApp(SyncStep):
             # this is a ServiceInstanceAttribute model
             if 'ONOSApp' in o.service_instance.leaf_model.class_names:
                 return self.delete_config(o)
-            return # if it's not related to an ONOSApp do nothing
+            return  # if it's not related to an ONOSApp do nothing
 
         # NOTE if it is an ONOSApp we don't care about the ServiceInstanceAttribute
         # as the reaper will delete it

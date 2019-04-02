@@ -13,24 +13,26 @@
 # limitations under the License.
 
 import unittest
-import json
 import functools
-from mock import patch, call, Mock, PropertyMock
+from mock import patch, Mock
 import requests_mock
 
-import os, sys
+import os
+import sys
 
-test_path=os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
+test_path = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
 
 
 def match_none(req):
-    return req.text == None
+    return req.text is None
+
 
 def match_json(desired, req):
-    if desired!=req.json():
+    if desired != req.json():
         raise Exception("Got request %s, but body is not matching" % req.url)
         return False
     return True
+
 
 class TestSyncOnosApp(unittest.TestCase):
 
@@ -47,11 +49,11 @@ class TestSyncOnosApp(unittest.TestCase):
         # END Setting up the config module
 
         from xossynchronizer.mock_modelaccessor_build import mock_modelaccessor_config
-        mock_modelaccessor_config(test_path, [("onos-service", "onos.xproto"),])
+        mock_modelaccessor_config(test_path, [("onos-service", "onos.xproto"), ])
 
         import xossynchronizer.modelaccessor
         import mock_modelaccessor
-        reload(mock_modelaccessor) # in case nose2 loaded it in a previous test
+        reload(mock_modelaccessor)  # in case nose2 loaded it in a previous test
         reload(xossynchronizer.modelaccessor)      # in case nose2 loaded it in a previous test
 
         from sync_onos_app import SyncONOSApp, DeferredException, model_accessor
@@ -61,7 +63,6 @@ class TestSyncOnosApp(unittest.TestCase):
         # import all class names to globals
         for (k, v) in model_accessor.all_model_classes.items():
             globals()[k] = v
-
 
         self.sync_step = SyncONOSApp
 
@@ -110,8 +111,8 @@ class TestSyncOnosApp(unittest.TestCase):
         self.onos_app_attribute.service_instance = self.si
         self.onos_app_attribute.name = "/onos/v1/network/configuration/apps/org.opencord.olt"
         self.onos_app_attribute.value = {
-            "kafka" : {
-                "bootstrapServers" : "cord-kafka-kafka.default.svc.cluster.local:9092"
+            "kafka": {
+                "bootstrapServers": "cord-kafka-kafka.default.svc.cluster.local:9092"
             }
         }
 
@@ -132,14 +133,16 @@ class TestSyncOnosApp(unittest.TestCase):
         openflow.backend_code = 0
 
         with patch.object(ONOSApp.objects, "get_items") as app_get, \
-            patch.object(ServiceInstance.objects, "get_items") as mock_si, \
-            self.assertRaises(DeferredException) as e:
+                patch.object(ServiceInstance.objects, "get_items") as mock_si, \
+                self.assertRaises(DeferredException) as e:
 
             app_get.return_value = [segment_routing, openflow]
             mock_si.return_value = [self.si]
             self.sync_step(model_accessor=self.model_accessor).sync_record(self.onos_app)
 
-        self.assertEqual(e.exception.message, 'Deferring installation of ONOSApp with id 1 as dependencies are not met')
+        self.assertEqual(
+            e.exception.message,
+            'Deferring installation of ONOSApp with id 1 as dependencies are not met')
         self.assertFalse(m.called)
 
     @requests_mock.Mocker()
@@ -153,8 +156,8 @@ class TestSyncOnosApp(unittest.TestCase):
                additional_matcher=match_none)
 
         m.get("http://onos-url:8181/onos/v1/applications/org.onosproject.vrouter",
-               status_code=200,
-               json=self.vrouter_app_response)
+              status_code=200,
+              json=self.vrouter_app_response)
 
         self.si.serviceinstanceattribute_dict = {}
 
@@ -177,8 +180,8 @@ class TestSyncOnosApp(unittest.TestCase):
                additional_matcher=match_none)
 
         m.get("http://onos-url:8181/onos/v1/applications/org.onosproject.vrouter",
-               status_code=200,
-               json=self.vrouter_app_response)
+              status_code=200,
+              json=self.vrouter_app_response)
 
         self.si.serviceinstanceattribute_dict = {}
 
@@ -260,13 +263,12 @@ class TestSyncOnosApp(unittest.TestCase):
                additional_matcher=functools.partial(match_json, expected),
                json=self.vrouter_app_response)
 
-
         m.get("http://onos-url:8181/onos/v1/applications/org.onosproject.vrouter",
               [
                   {"json": self.vrouter_app_response, "status_code": 200},
                   {"json": self.vrouter_app_response_updated, "status_code": 200}
               ]
-        )
+              )
 
         m.delete("http://onos-url:8181/onos/v1/applications/org.onosproject.vrouter",
                  status_code=204)
@@ -308,19 +310,22 @@ class TestSyncOnosApp(unittest.TestCase):
         self.si.serviceinstanceattribute_dict = {}
 
         with patch.object(ServiceInstance.objects, "get_items") as mock_si, \
-            self.assertRaises(Exception) as e:
+                self.assertRaises(Exception) as e:
             mock_si.return_value = [self.si]
             self.sync_step(model_accessor=self.model_accessor).sync_record(self.onos_app)
 
         self.assertTrue(m.called)
         self.assertEqual(m.call_count, 3)
         self.assertEqual(self.onos_app.app_id, self.vrouter_app_response["name"])
-        self.assertEqual(e.exception.message, "The version of org.onosproject.vrouter you installed (1.13.1) is not the same you requested (1.14.2)")
+        self.assertEqual(
+            e.exception.message,
+            "The version of org.onosproject.vrouter you installed (1.13.1) is not the same you requested (1.14.2)")
 
     @requests_mock.Mocker()
     def test_handle_409(self, m):
         """
-        A 409 "Application Already installed" response is not an error. This should not happen as we check if the app is installed.
+        A 409 "Application Already installed" response is not an error. This should not happen as we check
+        if the app is installed.
         """
 
         self.onos_app.url = 'http://onf.org/maven/...'
@@ -342,7 +347,7 @@ class TestSyncOnosApp(unittest.TestCase):
     @requests_mock.Mocker()
     def test_config_delete(self, m):
         m.delete("http://onos-url:8181%s" % self.onos_app_attribute.name,
-               status_code=204)
+                 status_code=204)
 
         self.sync_step(model_accessor=self.model_accessor).delete_record(self.onos_app_attribute)
         self.assertTrue(m.called)
@@ -351,7 +356,7 @@ class TestSyncOnosApp(unittest.TestCase):
     @requests_mock.Mocker()
     def test_app_deactivate(self, m):
         m.delete("http://onos-url:8181/onos/v1/applications/org.onosproject.vrouter/active",
-               status_code=204)
+                 status_code=204)
 
         self.sync_step(model_accessor=self.model_accessor).delete_record(self.onos_app)
         self.assertTrue(m.called)
@@ -370,6 +375,6 @@ class TestSyncOnosApp(unittest.TestCase):
         self.assertTrue(m.called)
         self.assertEqual(m.call_count, 1)
 
+
 if __name__ == '__main__':
     unittest.main()
-

@@ -14,13 +14,12 @@
 
 import unittest
 import json
-import functools
-from mock import patch, call, Mock, PropertyMock
-import requests_mock
+from mock import patch, call, Mock
 
-import os, sys
+import os
+import sys
 
-test_path=os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
+test_path = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
 
 
 class TestKubernetesEvent(unittest.TestCase):
@@ -38,14 +37,12 @@ class TestKubernetesEvent(unittest.TestCase):
         # END Setting up the config module
 
         from xossynchronizer.mock_modelaccessor_build import mock_modelaccessor_config
-        mock_modelaccessor_config(test_path, [("onos-service", "onos.xproto"),])
+        mock_modelaccessor_config(test_path, [("onos-service", "onos.xproto"), ])
 
         import xossynchronizer.modelaccessor
         import mock_modelaccessor
-        reload(mock_modelaccessor) # in case nose2 loaded it in a previous test
+        reload(mock_modelaccessor)  # in case nose2 loaded it in a previous test
         reload(xossynchronizer.modelaccessor)      # in case nose2 loaded it in a previous test
-
-        from kubernetes_event import KubernetesPodDetailsEventStep
 
         from xossynchronizer.modelaccessor import model_accessor
 
@@ -62,10 +59,10 @@ class TestKubernetesEvent(unittest.TestCase):
         self.event_step = KubernetesPodDetailsEventStep
 
         self.onos = ONOSService(name="myonos",
-                                rest_hostname = "onos-url",
-                                rest_port = "8181",
-                                rest_username = "karaf",
-                                rest_password = "karaf",
+                                rest_hostname="onos-url",
+                                rest_port="8181",
+                                rest_username="karaf",
+                                rest_password="karaf",
                                 backend_code=1,
                                 backend_status="succeeded")
 
@@ -78,16 +75,16 @@ class TestKubernetesEvent(unittest.TestCase):
         self.mockAllAttr.all.return_value = [self.attr]
 
         self.app1 = ONOSApp(name="myapp1",
-                           owner=self.onos,
-                           backend_code=1,
-                           backend_status="succeeded",
-                           service_instance_attributes=self.mockAllAttr)
+                            owner=self.onos,
+                            backend_code=1,
+                            backend_status="succeeded",
+                            service_instance_attributes=self.mockAllAttr)
 
         self.app2 = ONOSApp(name="myapp2",
-                           owner=self.onos,
-                           backend_code=1,
-                           backend_status="succeeded",
-                           service_instance_attributes=self.mockAllAttr)
+                            owner=self.onos,
+                            backend_code=1,
+                            backend_status="succeeded",
+                            service_instance_attributes=self.mockAllAttr)
 
         self.onos.service_instances = MockObjectList([self.app1, self.app2])
 
@@ -99,9 +96,9 @@ class TestKubernetesEvent(unittest.TestCase):
 
     def test_process_event(self):
         with patch.object(ONOSService.objects, "get_items") as service_objects, \
-             patch.object(ONOSService, "save", autospec=True) as service_save, \
-             patch.object(ONOSApp, "save", autospec=True) as app_save, \
-             patch.object(ServiceInstanceAttribute, "save", autospec=True) as attr_save:
+                patch.object(ONOSService, "save", autospec=True) as service_save, \
+                patch.object(ONOSApp, "save", autospec=True) as app_save, \
+                patch.object(ServiceInstanceAttribute, "save", autospec=True) as attr_save:
             service_objects.return_value = [self.onos]
 
             event_dict = {"status": "created",
@@ -114,8 +111,13 @@ class TestKubernetesEvent(unittest.TestCase):
 
             self.assertEqual(self.onos.backend_code, 0)
             self.assertEqual(self.onos.backend_status, "resynchronize due to kubernetes event")
-            service_save.assert_called_with(self=self.onos, update_fields=["updated", "backend_code", "backend_status"],
-                                            always_update_timestamp=True)
+            service_save.assert_called_with(
+                self=self.onos,
+                update_fields=[
+                    "updated",
+                    "backend_code",
+                    "backend_status"],
+                always_update_timestamp=True)
 
             self.assertEqual(self.app1.backend_code, 0)
             self.assertEqual(self.app1.backend_status, "resynchronize due to kubernetes event")
@@ -206,9 +208,5 @@ class TestKubernetesEvent(unittest.TestCase):
             self.assertEqual(self.app2.backend_status, "succeeded")
 
 
-
 if __name__ == '__main__':
     unittest.main()
-
-
-
