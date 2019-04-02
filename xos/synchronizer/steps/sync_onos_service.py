@@ -26,6 +26,7 @@ from helpers import Helpers
 
 log = create_logger(Config().get('logging'))
 
+
 class SyncONOSService(SyncStep):
     provides = [ONOSService]
     observes = [ONOSService, ServiceAttribute]
@@ -41,7 +42,7 @@ class SyncONOSService(SyncStep):
             if 'ONOSService' in o.service.leaf_model.class_names:
                 print "sync ONOSService Attribute", o.service.leaf_model
                 return self.sync_record(o.service.leaf_model)
-            return # if it's not related to an ONOSService do nothing
+            return  # if it's not related to an ONOSService do nothing
 
         onos_url = "%s:%s" % (Helpers.format_url(o.rest_hostname), o.rest_port)
         onos_basic_auth = HTTPBasicAuth(o.rest_username, o.rest_password)
@@ -72,7 +73,7 @@ class SyncONOSService(SyncStep):
                 # getting onos url and auth
                 onos_service = o.service.leaf_model
                 onos_url = "%s:%s" % (
-                Helpers.format_url(onos_service.rest_hostname), onos_service.rest_port)
+                    Helpers.format_url(onos_service.rest_hostname), onos_service.rest_port)
                 onos_basic_auth = HTTPBasicAuth(onos_service.rest_username,
                                                 onos_service.rest_password)
 
