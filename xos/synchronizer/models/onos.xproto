@@ -32,7 +32,7 @@ message ONOSService (Service){
     required string rest_hostname = 1 [
         help_text = "Hostname of ONOS Service REST endpoint",
         content_type = "stripped",
-        max_length = 255];
+        max_length = 256];
     required int32 rest_port = 2 [
         help_text = "Port numnber of ONOS Service REST endpoint",
         default = 8181];
@@ -40,10 +40,10 @@ message ONOSService (Service){
         help_text = "Username to use when authenticating to ONOS",
         content_type = "stripped", 
         default="karaf",
-        max_length = 255];
+        max_length = 256];
     required string rest_password = 4 [
         help_text = "Password to use when authenticating to ONOS",
         content_type = "stripped",
         default="karaf",
-        max_length = 255];
+        max_length = 256];
 }
