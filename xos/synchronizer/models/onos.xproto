@@ -6,6 +6,7 @@ message ONOSApp (ServiceInstance){
     option verbose_name="ONOS Application";
     option owner_class_name="ONOSService";
     option description = "An individual application within the ONOS Service";
+    option sync_implemented = "True";
 
     required string app_id = 1 [
         help_text="Application identifier",
@@ -28,6 +29,7 @@ message ONOSApp (ServiceInstance){
 message ONOSService (Service){
     option verbose_name="ONOS Service";
     option description = "Manages ONOS Applications contained within the ONOS Service";
+    option sync_implemented = "True";
 
     required string rest_hostname = 1 [
         help_text = "Hostname of ONOS Service REST endpoint",
