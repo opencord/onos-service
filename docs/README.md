@@ -1,6 +1,8 @@
 # ONOS Service
 
-This service manages ONOS and apps contained within ONOS. Although at this time CORD typically uses only one deployment of ONOS on a pod, this service is capable of managing multiple deployments of ONOS.
+This service manages ONOS and apps contained within ONOS. Although at this time
+CORD typically uses only one deployment of ONOS on a pod, this service is
+capable of managing multiple deployments of ONOS.
 
 The ONOS Service is responsible for:
 
@@ -13,15 +15,20 @@ The ONOS Service is responsible for:
 
 This service is composed of two models:
 
-- `ONOSService`. Contains global service parameters. In addition to standard `Service` fields such as the `name` of the service, this model contains the following ONOS specific fields:
+- `ONOSService`. Contains global service parameters. In addition to standard
+  `Service` fields such as the `name` of the service, this model contains the
+  following ONOS specific fields:
     - `rest_hostname`. Hostname of ONOS rest API endpoint.
     - `rest_port`. Port of ONOS rest endpoint.
     - `rest_username`. Username to use when authenticating to ONOS.
     - `rest_password`. Password to use when authenticating to ONOS.
-- `ONOSApp` represents an ONOS application and tracks its dependencies. This model extends the `ServiceInstance` model, adding the following fields:
+- `ONOSApp` represents an ONOS application and tracks its dependencies. This
+  model extends the `ServiceInstance` model, adding the following fields:
     - `app_id`. Application identifier.
-    - `dependencies`. Comma-separated list of apps that must be installed before this app.
-    - `url`. URL at which the application is available, if it needs to be downloaded.
+    - `dependencies`. Comma-separated list of apps that must be installed
+      before this app.
+    - `url`. URL at which the application is available, if it needs to be
+      downloaded.
     - `version`. Version of the app.
 
 In addition to the above models, this service uses `ServiceAttributes` and
@@ -29,13 +36,17 @@ In addition to the above models, this service uses `ServiceAttributes` and
 ONOSService and ONOSApp models.
 
 For more information about the models, please refer to the
-[xproto](https://github.com/opencord/onos-service/blob/master/xos/synchronizer/models/onos.xproto) definition
+[xproto](https://github.com/opencord/onos-service/blob/master/xos/synchronizer/models/onos.xproto)
+definition.
 
 ## Example TOSCA
 
-The following TOSCA recipe is a subset of a recipe taken from the seba-services profile that configures ONOS services as for the 6.1 release of CORD. For the complete recipe, please see the SEBA profile.
+The following TOSCA recipe is a subset of a recipe taken from the seba-services
+profile that configures ONOS services as for the 6.1 release of CORD. For the
+complete recipe, please see the SEBA profile.
 
-```tosca_definitions_version: tosca_simple_yaml_1_0
+```yaml
+tosca_definitions_version: tosca_simple_yaml_1_0
 
 imports:
    - custom_types/onosapp.yaml
@@ -117,7 +128,9 @@ topology_template:
 
 ## Integration with other Services
 
-The ONOS service is a dependency of many other services, including the Fabric and Fabric-crosconnect services. The ONOS service often is responsible for bringing up and configuring apps that these other services use.
+The ONOS service is a dependency of many other services, including the Fabric
+and Fabric-crosconnect services. The ONOS service often is responsible for
+bringing up and configuring apps that these other services use.
 
 ## Synchronization workflow
 
@@ -142,3 +155,33 @@ for the corresponding `ServiceInstanceAttributes` and if any are found:
 > by providing the `app_id`. If an application is not already present in the
 > container then it can be installed from a remote `.oar`,
 > in which case it is necessary to also provide an `url` and a `version`
+
+## Troubleshooting
+
+### ONOS Apps load failure
+
+If an ONOS app fails to load, you may see messages like this in the XOS GUI:
+
+```text
+ONOSApp
+Synchronization failed for: aaa
+```
+
+This can happen if the ONOS app can't be retrieved or installed.  You may also
+see log messages from the  that describe what happened, and what URL was used to attempt
+to perform the download:
+
+```text
+Request failed                 response=u'{"code":400,"message":"java.io.FileNotFoundException: https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=org.opencord&a=aaa-app&v=X.X.X-SNAPSHOT&e=oar"}'
+```
+
+To solve this problem you may need to run a webserver to function as a
+repository for these apps.
+
+- If you're making changes to the ONOS apps, see the [ONOS App
+  Development](/developer/workflows/onos-apps.html) for how to load alternative
+  versions,
+
+- If your pod lacks internet connectivity, see the notes on the [Offline
+  install](/installation/offline-install.md#build-a-maven-repo-that-already-contains-onos-apps).
+
